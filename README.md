@@ -1,5 +1,13 @@
 # AdobeScheduler
-# 5/22/2018 - Update AdobeScheduler
-Credentials - 
+# 5/24/2018 - Update AdobeScheduler
+#Bernardo Martinez
+.Net calendar hooked to Adobe connect sdk.
+Credentials - SAU
+IntraNet
+carrera.southern.edu:8080
+Adobe connect
+turner.southern.edu
 
-Port 8080
+
+
+
