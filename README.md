@@ -14,6 +14,9 @@ Credentials - SAU
 
 - Adobe Connect SDK - scidec - DimitriStroganov
 - JQuery version 2.0.3
+- JQuery SignalR-1.0.0
+- SignalR.net v2.0
+- Fullcalendar.js - https://fullcalendar.io/
 
 
 
