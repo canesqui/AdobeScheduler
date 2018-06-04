@@ -427,6 +427,8 @@ namespace AdobeScheduler.Hubs
 
         async public Task<List<CalendarData>> GetAllAppointments(string jsDate)
         {
+            ///get calendar list data
+            /*
             DateTime Date = DateTime.Parse(jsDate);
             DateTime DateS = Date.AddHours(-2);
             DateTime DateM = Date.AddMonths(-1);
@@ -453,6 +455,8 @@ namespace AdobeScheduler.Hubs
                 }
                  return await Task.Run(() => calList);
             }
+            */
+            return null;
         }
 
         public CalendarData ConstructObject(Appointment appointment, string id, string jsDate)

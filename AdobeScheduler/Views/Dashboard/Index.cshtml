@@ -20,7 +20,7 @@
                 <div class="controls">
                     <select id="class" width="300" style="width: 300px">
                         <option selected="selected" disabled="disabled" data-path="" data-url="">Select Your Room:</option>
-                        @if(Model.Session.MyMeetings != null){
+                         @if(Model.Session.MyMeetings != null){
                             foreach (AdobeConnectSDK.MeetingItem myMeetingItem in Model.Session.MyMeetings)
                             {
                                 <option data-path="@myMeetingItem.url_path" data-url="@myMeetingItem.FullUrl">@myMeetingItem.meeting_name</option>
