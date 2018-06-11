@@ -449,14 +449,21 @@ namespace AdobeScheduler.Hubs
                 }
                 
                 List<CalendarData> calList = new List<CalendarData>();
-                foreach(Appointment res in query)
+                for (var i = 0; i < query.Count; i++)
+                {
+                    //res
+                    Appointment res = query.ElementAt(i);
+                    var obj = ConstructObject(res, HttpContext.Current.User.Identity.Name, jsDate);
+                    calList.Add(obj);
+                }
+                //standard for loop is faster
+              /*  foreach (Appointment res in query)
                 {
                     var obj = ConstructObject(res, HttpContext.Current.User.Identity.Name,jsDate);
                     calList.Add(obj);
-                }
+                }*/
                  return await Task.Run(() => calList);
-            }
-            
+            }      
            // return null;
         }
 
