@@ -18,7 +18,16 @@ Credentials - SAU
 - SignalR.net v2.0
 - Fullcalendar.js - https://fullcalendar.io/
 
+AdobeConnect Sdk customized on the following functions:
+Funtions found in AdobeConnectXmlAPI
 
+public bool IsAdmin (String acl_id)
+public List<List<string>> GetSharedList()
+
+Logon, User management
+public bool Login(string userName, string userPassword, out StatusInfo iStatus)
+
+and others..
 
 
 
