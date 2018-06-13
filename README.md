@@ -1,6 +1,6 @@
 # AdobeScheduler
 ## 5/29/2018 - Update AdobeScheduler
-## .Net calendar hooked to Adobe connect sdk.
+## .Net calendar for Adobe connect.
 
 Credentials - SAU
 
