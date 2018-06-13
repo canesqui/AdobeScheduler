@@ -13,6 +13,7 @@ Credentials - SAU
 ### SDK
 
 - Adobe Connect SDK - scidec - DimitriStroganov
+https://github.com/DmitryStroganov/AdobeConnectSDK
 - JQuery version 2.0.3
 - JQuery SignalR-1.0.0
 - SignalR.net v2.0
