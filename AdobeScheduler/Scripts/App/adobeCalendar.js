@@ -2,6 +2,11 @@
 /// <reference path="~/Scripts/jquery.signalR-1.0.0.js" />
 /// <reference path="~/Scripts/fullcalendar.js" />
 
+/* Adobe Calendar core file
+ * Modified: 5/30/2018
+ * Bernardo Martinez
+ * Change: Update/Upgrade polling subroutines to decresease the load time
+ * 
 /*
 * PLEASE NOTE, event = appointment model { they are synonymous }
 */

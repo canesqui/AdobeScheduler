@@ -40,13 +40,12 @@ namespace AdobeScheduler.Controllers
             string jsDate = Request.QueryString["date"];
             AdobeStream stream = new AdobeStream();
             var eventList = stream.GetAllAppointments(jsDate);
-            return Json(eventList, JsonRequestBehavior.AllowGet);
+            return Json(eventList, JsonRequestBehavior.AllowGet); 
         }
 
         public ActionResult Room(string room)
         {
             UserSession model = (UserSession)Session["UserSession"];
-            
             using (AdobeConnectDB _db = new AdobeConnectDB())
             {
                 room = "/" + room + "/";
@@ -63,9 +62,9 @@ namespace AdobeScheduler.Controllers
                     ViewBag.Course = room;
                     return RedirectToAction("Index", "Dashboard");
                 }
-            }
+            } 
             
-        }
+        } 
 
         
 

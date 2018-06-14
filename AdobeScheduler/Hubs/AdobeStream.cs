@@ -424,9 +424,12 @@ namespace AdobeScheduler.Hubs
                 return;
             }           
         }
-
+        //This function gets the calendar list async. 
+        //Most inmportant funtion to load appoitment objects
         async public Task<List<CalendarData>> GetAllAppointments(string jsDate)
         {
+            ///get calendar list data
+            
             DateTime Date = DateTime.Parse(jsDate);
             DateTime DateS = Date.AddHours(-2);
             DateTime DateM = Date.AddMonths(-1);
@@ -446,13 +449,22 @@ namespace AdobeScheduler.Hubs
                 }
                 
                 List<CalendarData> calList = new List<CalendarData>();
-                foreach(Appointment res in query)
+                for (var i = 0; i < query.Count; i++)
+                {
+                    //res
+                    Appointment res = query.ElementAt(i);
+                    var obj = ConstructObject(res, HttpContext.Current.User.Identity.Name, jsDate);
+                    calList.Add(obj);
+                }
+                //standard for loop is faster
+              /*  foreach (Appointment res in query)
                 {
                     var obj = ConstructObject(res, HttpContext.Current.User.Identity.Name,jsDate);
                     calList.Add(obj);
-                }
+                }*/
                  return await Task.Run(() => calList);
-            }
+            }      
+           // return null;
         }
 
         public CalendarData ConstructObject(Appointment appointment, string id, string jsDate)
@@ -477,7 +489,8 @@ namespace AdobeScheduler.Hubs
             callendarData.endRepDate = appointment.endRepDate;
             callendarData.repititionType = appointment.repititionType;
 
-            if (!checkHost(id,callendarData.title))
+          //Optimize check so it won't take as many computational cycles.
+          /*  if (!checkHost(id,callendarData.title))
             {
                 callendarData.color = "#d3bf96";
                 callendarData.url = "";
@@ -502,7 +515,7 @@ namespace AdobeScheduler.Hubs
                 callendarData.url = "";
                 callendarData.editable = false;
                 callendarData.archived = true;
-            }
+            }*/
             return callendarData;
         }
        
