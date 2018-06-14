@@ -112,16 +112,18 @@ $(function () {
         }
     }
     adobeConnect.client.addSelf = function (add, event, max, jsHandle) {
-        if (max < 0) { max = 0; }
-        var html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> " + max + "</b> occupants <u>including the host</u> are available." + "</div>"
+        //les or equal
+        if (max <= 0) { max = 0; }
+        var html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> " + max + "</b> occupants <u>including the host</u> are available." + "</div>";
         $("#AppointMent_Submit").prop("disabled", true);
         if (event.roomSize > max) {
             $('#create').attr("disabled", true);
             if (jsHandle) {
-                var msg = "Event: " + event.title + " update failed. A maximum of " + max + " participants are avabiable for this time period!"
+                var msg = "Event: " + event.title + " update failed. A maximum of " + max + " participants are avabiable for this time period!";
                 notifier(false, "Updating", msg, rt, null, 'error');
             }
-            html = "<div class='alert alert-warning'><strong style='float:left;'> Warning! </strong> Seats are filled or you are over the alloted maximum of <b>" + max + "</b></div>";
+//alert-warning
+            html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Seats are filled or you are over the alloted maximum of <b>" + max + "</b>.  You might be overlaping with another class</div>";
         }
         $('#error').html(html);
         if (add) {
@@ -135,7 +137,6 @@ $(function () {
                 IsUpdate = true;
                 addAppointment(true, IsUpdate, false, event);
             }
-
         }
 
     }
@@ -418,7 +419,7 @@ $(function () {
             if (moment() > event.end) {
                 if (event.open && !event.archived) {
                     event.open = false;
-                    evrnt.archived = true;
+                    event.archived = true;
                     adobeConnect.server.getEvent(event.id, moment().format("MM/DD/YYYY hh:mm A")).done(function (event) {
                         $('#calendar').fullCalendar('removeEvents', event.id);
                         $('#calendar').fullCalendar('renderEvent', event, true);

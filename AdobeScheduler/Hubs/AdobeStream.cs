@@ -293,8 +293,6 @@ namespace AdobeScheduler.Hubs
             }
             return list;
         }
-
-
         /// <summary>
         /// Initilizes the I frame
         /// </summary>
@@ -401,8 +399,9 @@ namespace AdobeScheduler.Hubs
 
                 foreach (Appointment appoinment in query)
                 {
+                    //Operator seems to go off blanace +=
                     if (appoinment.id != data.id) {
-                        selfTotal += appoinment.roomSize;
+                        selfTotal =+ appoinment.roomSize;
                     }
                 }
 
