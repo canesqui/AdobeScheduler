@@ -47,8 +47,6 @@ $(function () {
         }
     });
 
-    
-
     $('body').on("change", "#class", function () {
         var e = document.getElementById("class");
         var opt = e.options[e.selectedIndex].getAttribute("data-url");
@@ -140,7 +138,6 @@ $(function () {
         }
 
     }
-
 
     getDuration = function (start, end) {
         start = new Date(start);
@@ -546,7 +543,27 @@ $(function () {
                                 //id: 'create',
                                 text: 'Create Appointment',
                                 //class: 'create',
+                                // Funtion to check weather the class before or after might be an issue
+                        /*    if (moment().subtract('m', 15) > moment($('#datetime').val()))
+                            { alert("Events cannot be created in the past"); return; }
+                                updateOrCreate(false);
+                            }*/
+                                    
+
                                 click: function () {
+                                  var events = $('#calendar').fullCalendar('clientEvents');
+                                  // events.forEach(function (event) {
+                                    //
+                                    //   
+                                   //      if (moment() >= event.start ) {
+                                   //    }
+                                    
+                              //    }
+                                //time comparison
+                                    var momentdemo = moment(date);
+                                    var timeline = momentdemo._d;
+                                    var eventtime = events[1].start;
+                                    alert("You created an Appoiment");
                                     updateOrCreate(false);
                                 }
                             },
