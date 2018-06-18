@@ -111,8 +111,10 @@ $(function () {
     }
     adobeConnect.client.addSelf = function (add, event, max, jsHandle) {
         //les or equal
+        var html2 = null;
         if (max <= 0) { max = 0; }
         var html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> " + max + "</b> occupants <u>including the host</u> are available." + "</div>";
+        html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Beware of meetings after you </div>";
         $("#AppointMent_Submit").prop("disabled", true);
         if (event.roomSize > max) {
             $('#create').attr("disabled", true);
@@ -123,8 +125,10 @@ $(function () {
 //alert-warning
             /// @TODO:  add message if the events overlap and there is issues with it.
             html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Seats are filled or you are over the alloted maximum of <b>" + max + "</b>.  You might be overlaping with another class</div>";
+            html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> There's a meeting right after you please log off in time </div>";
         }
         $('#error').html(html);
+        $('#meetingCrashError').html(html2);
         if (add) {
             notifier(false, "Creating", "Event: " + event.title + " successfully created", null, null, 'success');
             $('#calendar').fullCalendar('renderEvent', event, true);
@@ -550,22 +554,27 @@ $(function () {
                                 updateOrCreate(false);
                             }*/
                              //Click funtion: Gets the current time from the calendar and warns the user if there's a meeting right before it.       
-
                                 click: function () {
                                     var events = $('#calendar').fullCalendar('clientEvents');
-                                    var checkPrevious = moment($('#datetime').val()).subtract(1, "minutes");
-                                    var checkFollowing = moment($('#datetime').val()).t(1, "minutes");
+                                    var checkPrevious = moment($('#datetime').val()).subtract(1,"minutes");
+                                    var checkFollowing = moment($('#datetime').val()).add(60,"minutes");
                                     events.forEach(function (event) {
-                                        var eventtime = event.end;
-                                        if (checkPrevious.isSame(eventtime)) {
+                                        var eventtimeend = event.end;
+                                        var eventtimestart = event.start;
+                                        if (checkPrevious.isSame(eventtimeend)) {
                                             alert("Warning! There's a meeting finishing right before you.");
-                                        }                                  
+                                        } 
+                                        if (checkFollowing.isSame(eventtimestart)) {
+                                            alert("Warning! There's a meeting right after you.");
+
+                                            //TODO add rendering component to the creation.
+                                           // var html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> There's a meeting right after you please log off in time </div>";
+                                            //$('#meetingCrashError').html(html2);
+                                        } 
                                    });                                 
                                  //Gets index from data object
                                  // var eventtime = events[82].end;
-                                 //  var checkPrevious = moment($('#datetime').val()).subtract(1,"minutes");
-                                                                                             
-                                    alert("You created an Appoiment");
+                                 //  var checkPrevious = moment($('#datetime').val()).subtract(1,"minutes");                                                                                             
                                     updateOrCreate(false);
                                 }
                             },
