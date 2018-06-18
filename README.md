@@ -1,5 +1,5 @@
 # AdobeScheduler
-## 5/29/2018 - Update AdobeScheduler
+## 6/18/2018 - Update AdobeScheduler
 ## .Net calendar for Adobe connect.
 
 Credentials - SAU
@@ -30,6 +30,6 @@ Logon, User management
 
 and others..
 
-
-
-
+Updates Needed
+- AdobeConnectSdk merge
+- Update bootstrap from 2.3.2 to latest.
