@@ -121,6 +121,7 @@ $(function () {
                 notifier(false, "Updating", msg, rt, null, 'error');
             }
 //alert-warning
+            /// @TODO:  add message if the events overlap and there is issues with it.
             html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Seats are filled or you are over the alloted maximum of <b>" + max + "</b>.  You might be overlaping with another class</div>";
         }
         $('#error').html(html);
@@ -548,21 +549,22 @@ $(function () {
                             { alert("Events cannot be created in the past"); return; }
                                 updateOrCreate(false);
                             }*/
-                                    
+                             //Click funtion: Gets the current time from the calendar and warns the user if there's a meeting right before it.       
 
                                 click: function () {
-                                  var events = $('#calendar').fullCalendar('clientEvents');
-                                  // events.forEach(function (event) {
-                                    //
-                                    //   
-                                   //      if (moment() >= event.start ) {
-                                   //    }
-                                    
-                              //    }
-                                //time comparison
-                                    var momentdemo = moment(date);
-                                    var timeline = momentdemo._d;
-                                    var eventtime = events[1].start;
+                                    var events = $('#calendar').fullCalendar('clientEvents');
+                                    var checkPrevious = moment($('#datetime').val()).subtract(1, "minutes");
+                                    var checkFollowing = moment($('#datetime').val()).t(1, "minutes");
+                                    events.forEach(function (event) {
+                                        var eventtime = event.end;
+                                        if (checkPrevious.isSame(eventtime)) {
+                                            alert("Warning! There's a meeting finishing right before you.");
+                                        }                                  
+                                   });                                 
+                                 //Gets index from data object
+                                 // var eventtime = events[82].end;
+                                 //  var checkPrevious = moment($('#datetime').val()).subtract(1,"minutes");
+                                                                                             
                                     alert("You created an Appoiment");
                                     updateOrCreate(false);
                                 }
