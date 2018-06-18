@@ -141,9 +141,10 @@ namespace AdobeScheduler.Hubs
         /// <returns></returns>
         public bool AddAppointment(bool isChecked, bool isUpdate, string roomId, string userId, string name, string roomSize, string url, string path, string JsdateTime, string Jsmin, bool jsHandle, bool isMultiple, string repId, string JSendRepDate, string repType, bool changeAll)
         {
-
+             //Reduce 30,60,90 to 29,59,89
             DateTime date = DateTime.Parse(JsdateTime);
             int endtime = int.Parse(Jsmin);
+            endtime = endtime - 1;
             DateTime end = date.AddMinutes(endtime);
             DateTime endRepTime;
             //if there is no end rep time
