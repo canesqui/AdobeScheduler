@@ -69,7 +69,7 @@ $(function () {
         var path = (event == undefined) ? $('#class option:selected').attr('data-path') : event.url;
         var datetime = (event == undefined) ? $('#datetime').val() : moment(event.start).format("MM/DD/YYYY hh:mm A");
         var room_size = (event == undefined) ? $('#occupants').val() : event.roomSize;
-        var end = (event == undefined) ? $('#duration option:selected').text() : getDuration(event.start, event.end);
+        var end = (event == undefined) ? $('#duration option:selected').attr('value') : getDuration(event.start, event.end);
         var js = (jsHandle == undefined) ? false : true;
 
         //if the selected DOM object is none, send false, otherwise true
