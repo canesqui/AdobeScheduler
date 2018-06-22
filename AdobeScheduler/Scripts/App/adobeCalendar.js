@@ -90,8 +90,8 @@ $(function () {
         }
 
 
-        console.log("This is is Multiple " + isMultiple);
-        console.log("RepId " + repId);
+        //console.log("This is is Multiple " + isMultiple);
+       // console.log("RepId " + repId);
         adobeConnect.server.addAppointment(checked, isUpdate, roomId, userId, class_name, room_size, url, path, datetime, end, js, isMultiple, repId, JSendRepDate, repType, changeAll)
                 .done(function (e) {
                     return e;
@@ -115,31 +115,38 @@ $(function () {
         if (max <= 0) { max = 0; }
         var html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> " + max + "</b> occupants <u>including the host</u> are available." + "</div>";
         html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Beware of meetings after you </div>";
-        $("#AppointMent_Submit").prop("disabled", true);
+       // $("#AppointMent_Submit").prop("disabled", true);
+       // ("addAppointment ").dialog.
         if (event.roomSize > max) {
-            $('#create').attr("disabled", true);
+            $('#create').attr("disabled", true).css('opacity', 0.5);
+            $('#createAppointment').attr("disabled", true).css('opacity',0.5);
+            alert("Error, that number is too large");
             if (jsHandle) {
-                var msg = "Event: " + event.title + " update failed. A maximum of " + max + " participants are avabiable for this time period!";
+                var msg = "Event: " + event.title + " update failed. A maximum of " + max + " participants are avaliable for this time period!";
                 notifier(false, "Updating", msg, rt, null, 'error');
             }
 //alert-warning
             /// @TODO:  add message if the events overlap and there is issues with it.
-            html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Seats are filled or you are over the alloted maximum of <b>" + max + "</b>.  You might be overlaping with another class</div>";
-            html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> There's a meeting right after you please log off in time </div>";
+           // html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Seats are filled or you are over the alloted maximum of <b>" + max + "</b>.  You might be overlaping with another class</div>";
+           // html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> There's a meeting right after you please log off in time </div>";
         }
         $('#error').html(html);
         $('#meetingCrashError').html(html2);
         if (add) {
-            notifier(false, "Creating", "Event: " + event.title + " successfully created", null, null, 'success');
-            $('#calendar').fullCalendar('renderEvent', event, true);
+                notifier(false, "Creating", "Event: " + event.title + " successfully created", null, null, 'success');
+                $('#calendar').fullCalendar('renderEvent', event, true);
+            
         }
-
-        if (event.roomSize <= max) {
+        // check if there's other events that overlap one another
+        //check for 0 execption
+        if (event.roomSize < max) {
             $('#create').attr("disabled", false);
+            $('#createAppointment').attr("disabled", false); //.css('opacity', 0.5); ungray items
             if (jsHandle) {
                 IsUpdate = true;
                 addAppointment(true, IsUpdate, false, event);
             }
+           //alert("Error, that number is too large number 2 test test");
         }
 
     }
@@ -414,10 +421,8 @@ $(function () {
                         $('#calendar').fullCalendar('renderEvent', event, true);
                         alert("Event: " + event.title + " has been opened");
                     })
-
                 }
             }
-
             if (moment() > event.end) {
                 if (event.open && !event.archived) {
                     event.open = false;
@@ -540,12 +545,12 @@ $(function () {
                     IsUpdate = false;
                     if (moment().subtract('m', 30) > moment(date))
                     { alert("Events cannot be created in the past"); return; }
-                    $('#addAppointment').dialog({
+                    $('#addAppointment').dialog({   //
                         title: "Create Appointment",
                         buttons:
                          [
                             {                                
-                                //id: 'create',
+                                id: 'createAppointment',
                                 text: 'Create Appointment',
                                 //class: 'create',
                                 // Funtion to check weather the class before or after might be an issue
@@ -601,8 +606,8 @@ $(function () {
                     $('#occupants').val(event.roomSize);
                     //$('#duration option:selected').text(getDuration(event.start, event.end));
                     $('#duration').val(getDuration(event.start, event.end));
-                    var html = "<input type='submit' onclick='delete_confirm()' class='btn btn-danger' style='float:left' value='Delete Appointment' /><input disabled type='submit' onclick='Update()' id='AppointMent_Submit' class='btn btn-success' value='Update Appointment' />";
-                    $('.modal-footer').html(html);
+                    //var html = "<input type='submit' onclick='delete_confirm()' class='btn btn-danger' style='float:left' value='Delete Appointment' /><input disabled type='submit' onclick='Update()' id='AppointMent_Submit' class='btn btn-success' value='Update Appointment' />";
+                   // $('.modal-footer').html(html);
                     $('#addAppointment').dialog({
                         title: "Update/Delete Appointment",
                         buttons: {
@@ -635,7 +640,6 @@ $(function () {
                                 notifier(false, "Calceled", "Transaction Canceled", null, null, 'success');
                             }
                             else if (answer == "true") {
-
                                 if (isRep === false) {
                                     adobeConnect.server.delete(id, false);
                                     notifier(false, "Deleting", "Event #" + id + ": " + title + " has been deleted", null, null, 'success');
@@ -858,7 +862,7 @@ $(function () {
         }
     });
 
-    $('#reserve_room').click(function () {
+    /*$('#reserve_room').click(function () {
         IsUpdate = false;
         $('#datetime').val(moment().format("MM/DD/YYYY hh:mm A "));
         $('#addAppointment').dialog({
@@ -882,7 +886,7 @@ $(function () {
             ]
         });
         $('#addAppointment').dialog("open");
-    });
+    }); */
 
 
 });
