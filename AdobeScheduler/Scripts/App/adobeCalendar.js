@@ -26,7 +26,7 @@ $(function () {
 
     IsUpdate = false;
     roomList = "";
-    window.max = 50;
+    window.max = 70;
     var adobeConnect = $.connection.adobeConnect;
 
     $('#addAppointment').dialog({
@@ -110,8 +110,9 @@ $(function () {
         }
     }
     adobeConnect.client.addSelf = function (add, event, max, jsHandle) {
-        //les or equal
+        //less or equal
         var html2 = null;
+        $('#createAppointment').attr("disabled", false).css('opacity', 1);
         if (max <= 0) { max = 0; }
         var html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> " + max + "</b> occupants <u>including the host</u> are available." + "</div>";
         html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Beware of meetings after you </div>";

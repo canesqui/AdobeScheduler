@@ -60,7 +60,7 @@ namespace AdobeScheduler.Hubs
             DateTime date = DateTime.Parse(JsdateTime);
             int endtime = int.Parse(Jsmin);
             DateTime end = date.AddMinutes(endtime);
-            if (int.Parse(roomSize) > 50)
+            if (int.Parse(roomSize) > 70)
             {
                 return false;
             }
@@ -155,7 +155,7 @@ namespace AdobeScheduler.Hubs
             {
                 endRepTime = DateTime.Parse(JSendRepDate);
             }
-            if (int.Parse(roomSize) > 50)
+            if (int.Parse(roomSize) > 70)
             {
                 return false;
             }
@@ -406,7 +406,7 @@ namespace AdobeScheduler.Hubs
                 }
 
                 var calendarData = ConstructObject(data, id,jsDate);
-                remaining = 50 - selfTotal;
+                remaining = 70 - selfTotal;
                 if (isUpdate) {
                     if (isChecked)
                     {
