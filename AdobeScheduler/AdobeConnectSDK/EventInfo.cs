@@ -50,6 +50,6 @@ namespace AdobeConnectSDK
         public bool expired;
 
         [XmlElement]
-        public TimeSpan duration;   
+        public TimeSpan duration;
     }
 }
