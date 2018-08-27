@@ -1,5 +1,5 @@
 ﻿/// <reference path="~/Scripts/jquery-1.9.1.js"" />
-/// <reference path="~/Scripts/jquery.signalR-1.0.0.js" />
+///// <reference path="~/Scripts/jquery.signalR-1.0.0.js" />
 /// <reference path="~/Scripts/fullcalendar.js" />
 
 /* Adobe Calendar core file
@@ -26,7 +26,7 @@ $(function () {
 
     IsUpdate = false;
     roomList = "";
-    window.max = 50;
+    window.max = 70;
     var adobeConnect = $.connection.adobeConnect;
 
     $('#addAppointment').dialog({
@@ -46,8 +46,6 @@ $(function () {
             addAppointment(false, IsUpdate);
         }
     });
-
-    
 
     $('body').on("change", "#class", function () {
         var e = document.getElementById("class");
@@ -71,7 +69,7 @@ $(function () {
         var path = (event == undefined) ? $('#class option:selected').attr('data-path') : event.url;
         var datetime = (event == undefined) ? $('#datetime').val() : moment(event.start).format("MM/DD/YYYY hh:mm A");
         var room_size = (event == undefined) ? $('#occupants').val() : event.roomSize;
-        var end = (event == undefined) ? $('#duration option:selected').text() : getDuration(event.start, event.end);
+        var end = (event == undefined) ? $('#duration option:selected').attr('value') : getDuration(event.start, event.end);
         var js = (jsHandle == undefined) ? false : true;
 
         //if the selected DOM object is none, send false, otherwise true
@@ -92,8 +90,8 @@ $(function () {
         }
 
 
-        console.log("This is is Multiple " + isMultiple);
-        console.log("RepId " + repId);
+        //console.log("This is is Multiple " + isMultiple);
+       // console.log("RepId " + repId);
         adobeConnect.server.addAppointment(checked, isUpdate, roomId, userId, class_name, room_size, url, path, datetime, end, js, isMultiple, repId, JSendRepDate, repType, changeAll)
                 .done(function (e) {
                     return e;
@@ -112,34 +110,47 @@ $(function () {
         }
     }
     adobeConnect.client.addSelf = function (add, event, max, jsHandle) {
-        if (max < 0) { max = 0; }
-        var html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> " + max + "</b> occupants <u>including the host</u> are available." + "</div>"
-        $("#AppointMent_Submit").prop("disabled", true);
+        //less or equal
+        var html2 = null;
+        $('#createAppointment').attr("disabled", false).css('opacity', 1);
+        if (max <= 0) { max = 0; }
+        var html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> " + max + "</b> occupants <u>including the host</u> are available." + "</div>";
+        html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Beware of meetings after you </div>";
+       // $("#AppointMent_Submit").prop("disabled", true);
+       // ("addAppointment ").dialog.
         if (event.roomSize > max) {
-            $('#create').attr("disabled", true);
+            $('#create').attr("disabled", true).css('opacity', 0.5);
+            $('#createAppointment').attr("disabled", true).css('opacity',0.5);
+            alert("Error, that number is too large");
             if (jsHandle) {
-                var msg = "Event: " + event.title + " update failed. A maximum of " + max + " participants are avabiable for this time period!"
+                var msg = "Event: " + event.title + " update failed. A maximum of " + max + " participants are avaliable for this time period!";
                 notifier(false, "Updating", msg, rt, null, 'error');
             }
-            html = "<div class='alert alert-warning'><strong style='float:left;'> Warning! </strong> Seats are filled or you are over the alloted maximum of <b>" + max + "</b></div>";
+//alert-warning
+            /// @TODO:  add message if the events overlap and there is issues with it.
+           // html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Seats are filled or you are over the alloted maximum of <b>" + max + "</b>.  You might be overlaping with another class</div>";
+           // html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> There's a meeting right after you please log off in time </div>";
         }
         $('#error').html(html);
+        $('#meetingCrashError').html(html2);
         if (add) {
-            notifier(false, "Creating", "Event: " + event.title + " successfully created", null, null, 'success');
-            $('#calendar').fullCalendar('renderEvent', event, true);
+                notifier(false, "Creating", "Event: " + event.title + " successfully created", null, null, 'success');
+                $('#calendar').fullCalendar('renderEvent', event, true);
+            
         }
-
-        if (event.roomSize <= max) {
+        // check if there's other events that overlap one another
+        //check for 0 execption
+        if (event.roomSize < max) {
             $('#create').attr("disabled", false);
+            $('#createAppointment').attr("disabled", false); //.css('opacity', 0.5); ungray items
             if (jsHandle) {
                 IsUpdate = true;
                 addAppointment(true, IsUpdate, false, event);
             }
-
+           //alert("Error, that number is too large number 2 test test");
         }
 
     }
-
 
     getDuration = function (start, end) {
         start = new Date(start);
@@ -399,7 +410,6 @@ $(function () {
             });
         }
     }
-
     OpenEvents = setInterval(function () {
         var events = $('#calendar').fullCalendar('clientEvents');
         events.forEach(function (event) {
@@ -411,14 +421,12 @@ $(function () {
                         $('#calendar').fullCalendar('renderEvent', event, true);
                         alert("Event: " + event.title + " has been opened");
                     })
-
                 }
             }
-
             if (moment() > event.end) {
                 if (event.open && !event.archived) {
                     event.open = false;
-                    evrnt.archived = true;
+                    event.archived = true;
                     adobeConnect.server.getEvent(event.id, moment().format("MM/DD/YYYY hh:mm A")).done(function (event) {
                         $('#calendar').fullCalendar('removeEvents', event.id);
                         $('#calendar').fullCalendar('renderEvent', event, true);
@@ -537,15 +545,41 @@ $(function () {
                     IsUpdate = false;
                     if (moment().subtract('m', 30) > moment(date))
                     { alert("Events cannot be created in the past"); return; }
-                    $('#addAppointment').dialog({
+                    $('#addAppointment').dialog({   //
                         title: "Create Appointment",
                         buttons:
                          [
                             {                                
-                                //id: 'create',
+                                id: 'createAppointment',
                                 text: 'Create Appointment',
                                 //class: 'create',
+                                // Funtion to check weather the class before or after might be an issue
+                        /*    if (moment().subtract('m', 15) > moment($('#datetime').val()))
+                            { alert("Events cannot be created in the past"); return; }
+                                updateOrCreate(false);
+                            }*/
+                             //Click funtion: Gets the current time from the calendar and warns the user if there's a meeting right before it.       
                                 click: function () {
+                                    var events = $('#calendar').fullCalendar('clientEvents');
+                                    var checkPrevious = moment($('#datetime').val()).subtract(1,"minutes");
+                                    var checkFollowing = moment($('#datetime').val()).add(60,"minutes");
+                                    events.forEach(function (event) {
+                                        var eventtimeend = event.end;
+                                        var eventtimestart = event.start;
+                                        if (checkPrevious.isSame(eventtimeend)) {
+                                            alert("Warning! There's a meeting finishing right before you.");
+                                        } 
+                                        if (checkFollowing.isSame(eventtimestart)) {
+                                            alert("Warning! There's a meeting right after you.");
+
+                                            //TODO add rendering component to the creation.
+                                           // var html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> There's a meeting right after you please log off in time </div>";
+                                            //$('#meetingCrashError').html(html2);
+                                        } 
+                                   });                                 
+                                 //Gets index from data object
+                                 // var eventtime = events[82].end;
+                                 //  var checkPrevious = moment($('#datetime').val()).subtract(1,"minutes");                                                                                             
                                     updateOrCreate(false);
                                 }
                             },
@@ -572,8 +606,8 @@ $(function () {
                     $('#occupants').val(event.roomSize);
                     //$('#duration option:selected').text(getDuration(event.start, event.end));
                     $('#duration').val(getDuration(event.start, event.end));
-                    var html = "<input type='submit' onclick='delete_confirm()' class='btn btn-danger' style='float:left' value='Delete Appointment' /><input disabled type='submit' onclick='Update()' id='AppointMent_Submit' class='btn btn-success' value='Update Appointment' />";
-                    $('.modal-footer').html(html);
+                    //var html = "<input type='submit' onclick='delete_confirm()' class='btn btn-danger' style='float:left' value='Delete Appointment' /><input disabled type='submit' onclick='Update()' id='AppointMent_Submit' class='btn btn-success' value='Update Appointment' />";
+                   // $('.modal-footer').html(html);
                     $('#addAppointment').dialog({
                         title: "Update/Delete Appointment",
                         buttons: {
@@ -606,7 +640,6 @@ $(function () {
                                 notifier(false, "Calceled", "Transaction Canceled", null, null, 'success');
                             }
                             else if (answer == "true") {
-
                                 if (isRep === false) {
                                     adobeConnect.server.delete(id, false);
                                     notifier(false, "Deleting", "Event #" + id + ": " + title + " has been deleted", null, null, 'success');
@@ -829,7 +862,7 @@ $(function () {
         }
     });
 
-    $('#reserve_room').click(function () {
+    /*$('#reserve_room').click(function () {
         IsUpdate = false;
         $('#datetime').val(moment().format("MM/DD/YYYY hh:mm A "));
         $('#addAppointment').dialog({
@@ -853,7 +886,7 @@ $(function () {
             ]
         });
         $('#addAppointment').dialog("open");
-    });
+    }); */
 
 
 });

@@ -7,10 +7,11 @@
     var view = $('#calendar').fullCalendar('getView');
     console.log("view", view);
 </script>
-<div id="main-menu">
+<!--Legacy reserve_room button-->
+<!--<div id="main-menu">
         <a id="reserve_room"><i class="icon-plus">+</i> <span>RESERVE<br />ROOM</span></a>
         <div id="task"></div>
-</div>
+</div>  -->
  
 <div id="addAppointment">
     <form id="modal-form" class="form-horizontal" accept-charset="UTF-8"  data-remote="true" >
@@ -20,12 +21,15 @@
                 <div class="controls">
                     <select id="class" width="300" style="width: 300px">
                         <option selected="selected" disabled="disabled" data-path="" data-url="">Select Your Room:</option>
-                         @if(Model.Session.MyMeetings != null){
+                        @if (Model.Session.MyMeetings != null)
+                        {
                             foreach (AdobeConnectSDK.MeetingItem myMeetingItem in Model.Session.MyMeetings)
                             {
                                 <option data-path="@myMeetingItem.url_path" data-url="@myMeetingItem.FullUrl">@myMeetingItem.meeting_name</option>
                             }
-                        }else{
+                        }
+                        else
+                        {
                             <option>You have no Class Rooms Assigned</option>
                         }
                     </select>
@@ -34,7 +38,7 @@
                 <hr />
                 <label class="control-label">Select a Date And Time:</label>
                 <div class="controls">
-                    <input type="text" class="date_span" id="datetime"  />
+                    <input type="text" class="date_span" id="datetime" />
                 </div>
                 <label class="control-label">Event Repetition:</label>
                 <div class="controls">
@@ -49,20 +53,21 @@
                 <hr />
                 <label class="control-label">Duration (in Min):</label>
                 <div class="controls">
-                    <select id="duration"style="width: 60px">
-                        <option>30</option>
-                        <option selected>60</option>
-                        <option>90</option>
+                    <select id="duration" style="width: 60px">
+                        <option value="29">30</option>
+                        <option value="59">60</option>
+                        <option value="89">90</option>
                     </select>
                 </div>
                 <hr />
                 <label class="control-label">Number of Occupants:</label>
-                 <div class="controls">
-                    <input id="occupants" type="text" value="50"class="numbersOnly input-mini" />
+                <div class="controls">
+                    <input id="occupants" type="text" value="70" class="numbersOnly input-mini" />
                 </div>
                 <div id="error"></div>
-                 
-        </fieldset>
+                <div id="meetingCrashError"></div>
+
+</fieldset>
     </form>
 </div>
 

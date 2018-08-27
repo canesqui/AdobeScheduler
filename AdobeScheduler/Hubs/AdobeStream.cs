@@ -60,7 +60,7 @@ namespace AdobeScheduler.Hubs
             DateTime date = DateTime.Parse(JsdateTime);
             int endtime = int.Parse(Jsmin);
             DateTime end = date.AddMinutes(endtime);
-            if (int.Parse(roomSize) > 50)
+            if (int.Parse(roomSize) > 70)
             {
                 return false;
             }
@@ -141,7 +141,7 @@ namespace AdobeScheduler.Hubs
         /// <returns></returns>
         public bool AddAppointment(bool isChecked, bool isUpdate, string roomId, string userId, string name, string roomSize, string url, string path, string JsdateTime, string Jsmin, bool jsHandle, bool isMultiple, string repId, string JSendRepDate, string repType, bool changeAll)
         {
-
+            
             DateTime date = DateTime.Parse(JsdateTime);
             int endtime = int.Parse(Jsmin);
             DateTime end = date.AddMinutes(endtime);
@@ -155,7 +155,7 @@ namespace AdobeScheduler.Hubs
             {
                 endRepTime = DateTime.Parse(JSendRepDate);
             }
-            if (int.Parse(roomSize) > 50)
+            if (int.Parse(roomSize) > 70)
             {
                 return false;
             }
@@ -293,8 +293,6 @@ namespace AdobeScheduler.Hubs
             }
             return list;
         }
-
-
         /// <summary>
         /// Initilizes the I frame
         /// </summary>
@@ -401,13 +399,14 @@ namespace AdobeScheduler.Hubs
 
                 foreach (Appointment appoinment in query)
                 {
+                    //Operator seems to go off blanace +=
                     if (appoinment.id != data.id) {
-                        selfTotal += appoinment.roomSize;
+                        selfTotal =+ appoinment.roomSize;
                     }
                 }
 
                 var calendarData = ConstructObject(data, id,jsDate);
-                remaining = 50 - selfTotal;
+                remaining = 70 - selfTotal;
                 if (isUpdate) {
                     if (isChecked)
                     {

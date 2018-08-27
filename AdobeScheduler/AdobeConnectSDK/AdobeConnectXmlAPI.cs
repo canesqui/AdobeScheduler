@@ -807,7 +807,8 @@ namespace AdobeConnectSDK
                     if (!bool.TryParse(node.SelectSingleNode("expired/text()").Value, out mi.expired))
                         mi.expired = false;
 
-                    //mi.duration
+                    //mi.
+
                     //:parse exact or calc                   
                     mi.Duration = mi.date_end.Subtract(mi.date_begin);
 
