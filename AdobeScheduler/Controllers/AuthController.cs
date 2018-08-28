@@ -1,14 +1,12 @@
 ﻿using AdobeScheduler.Models;
 using AdobeScheduler.Security;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AdobeConnectSDK;
 using System.Web.Security;
 using System;
-
-
+using AdobeScheduler.Util;
 
 namespace AdobeScheduler.Controllers
 {
@@ -33,7 +31,7 @@ namespace AdobeScheduler.Controllers
                     string hashTicket = FormsAuthentication.Encrypt(ticket);
                     HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, hashTicket);
                     HttpContext.Response.Cookies.Add(cookie);
-                    UserSession userSession = new UserSession(con.GetMyMeetings(), con.GetUserInfo());
+                    UserSession userSession = new UserSession(Utilities.Adapter<Models.MeetingItem[], AdobeConnectSDK.MeetingItem[]>(con.GetMyMeetings()), Utilities.Adapter<Models.UserInfo, AdobeConnectSDK.UserInfo>(con.GetUserInfo()));
                     using (AdobeConnectDB _db = new AdobeConnectDB()) {
                         var check = _db.AdobeUserInfo.Where(u => u.Username == user.Username).FirstOrDefault();
                         if (check == null)
