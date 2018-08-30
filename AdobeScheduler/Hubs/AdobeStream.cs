@@ -340,51 +340,7 @@ namespace AdobeScheduler.Hubs
                 }
                 
             }
-        }
-
-        /// <summary>
-        /// An overloaded function which returns a Tuple containing the list of rooms and the 
-        /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        /*public Tuple<List<List<string>>, string> Login(string username, string password = null)
-        {
-            AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
-            Tuple<List<List<string>>, string> result = new Tuple<List<List<string>>,string>(null,"");
-            StatusInfo sInfo;
-            using (AdobeConnectDB _db = new AdobeConnectDB())
-            {
-                var query = _db.AdobeUserInfo.Where(u => u.Username == username).FirstOrDefault();
-                if (password == null)
-                {
-                    password = query.Password;
-                }
-                if (adobeObj.Login(username, password, out sInfo) == false)
-                {
-                    if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-                    { return result; }
-                    else
-                    {
-                        return result;
-                    }
-                }
-                else
-                {
-                    string _targetUrl = string.Format("http://turner.southern.edu/api/xml?action=login&login={0}&password={1}", username, password);
-                    List<List<string>> list = null;
-                    bool isAdmin = adobeObj.IsAdmin(adobeObj.GetUserInfo().user_id);
-                    if (isAdmin)
-                    {
-                        list = adobeObj.GetSharedList();
-                    }
-
-                    result = new Tuple<List<List<string>>, string>(list, _targetUrl);
-
-                    return result;
-                }
-            }
-        }*/
+        }       
 
         public void addSelf(Appointment data, string id, bool isChecked, bool isUpdate, int max, bool jsHandle, string jsDate)
         {
@@ -486,35 +442,7 @@ namespace AdobeScheduler.Hubs
             callendarData.isRep = appointment.isRep;
             callendarData.repititionId = appointment.repititionId;
             callendarData.endRepDate = appointment.endRepDate;
-            callendarData.repititionType = appointment.repititionType;
-
-          //Optimize check so it won't take as many computational cycles.
-          /*  if (!checkHost(id,callendarData.title))
-            {
-                callendarData.color = "#d3bf96";
-                callendarData.url = "";
-                callendarData.editable = false;
-            }
-
-            if (checkHost(id, callendarData.title))
-            {
-                if (Date < callendarData.start)
-                {
-                    callendarData.color = "#bac7c3";
-                    callendarData.open = false;
-                    callendarData.url = "";
-                }
-
-            }
-
-            if (Date > callendarData.end)
-            {
-                callendarData.color = "gray";
-                callendarData.open = false;
-                callendarData.url = "";
-                callendarData.editable = false;
-                callendarData.archived = true;
-            }*/
+            callendarData.repititionType = appointment.repititionType;          
             return callendarData;
         }
        
@@ -641,14 +569,14 @@ namespace AdobeScheduler.Hubs
                 try{
                     query = _db.AdobeUserInfo.Where(u => u.Username == username).FirstOrDefault();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    throw e;
+                    throw;
                 }
                 List<String> meetingList = new List<String>();
                 if (adobeObj.Login(username, query.Password, out sInfo)){
                     var myMeeting = adobeObj.GetMyMeetings();
-                    foreach(MeetingItem myMeetingItem in myMeeting){
+                    foreach(AdobeConnectSDK.MeetingItem myMeetingItem in myMeeting){
                         meetingList.Add(myMeetingItem.meeting_name);
                     }
                     var result = meetingList.Contains(meeting);

@@ -13,6 +13,7 @@ using System.Web.Routing;
 using System.Web.Security;
 using System.Web.SessionState;
 using System.Data.Entity;
+using AutoMapper;
 
 namespace AdobeScheduler
 {
@@ -24,19 +25,13 @@ namespace AdobeScheduler
        
         protected void Application_Start(object sender, EventArgs e)
         {
-            //init db and force it to create by invoking context
-            //Database.SetInitializer(new DatabaseInitializer());
-            //AdobeConnectDB db = new AdobeConnectDB();
-            //db.Database.Initialize(true);
-
             AreaRegistration.RegisterAllAreas();
             WebApiConfig.Register(GlobalConfiguration.Configuration);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            //Added tls 1.2, without it there are login errors
             System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
-            //System.Net.ServicePointManager.SecurityProtocol |= System.Net.SecurityProtocolType.Tls11 | System.Net.SecurityProtocolType.Tls12;
+            Mapper.Initialize(Util.AutoMapperConfiguration.Configure);
         }
 
         void MvcApplication_PostAuthenticateRequest(object sender, EventArgs e)

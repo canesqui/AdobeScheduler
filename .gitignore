@@ -40,6 +40,7 @@ local.properties
 *.suo
 *.user
 *.sln.docstates
+applicationhost.config
 
 # Build results
 [Dd]ebug/
@@ -161,7 +162,5 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
-/.vs/AdobeScheduler/v15/Server/sqlite3/storage.ide-wal
-/.vs/AdobeScheduler/v15/Server/sqlite3/storage.ide-shm
-/.vs/AdobeScheduler/v15/Server/sqlite3/storage.ide
-/.vs/AdobeScheduler/v15/Server/sqlite3/db.lock
+
+/.vs/AdobeScheduler/v15/Server/sqlite3
