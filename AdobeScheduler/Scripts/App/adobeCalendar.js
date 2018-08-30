@@ -755,7 +755,7 @@ $(function () {
                             }
 
                         });
-                        window.open(event.url, event.title);
+                        window.open(event.adobeUrl, event.title);
                     }
                 }
                 return false;
