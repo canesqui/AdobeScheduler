@@ -10,8 +10,8 @@ namespace AdobeScheduler.Util
     {
         public static void Configure(IMapperConfigurationExpression config)
         {
-            config.CreateMap<AdobeConnectSDK.MeetingItem, Models.MeetingItem>();
-            config.CreateMap<AdobeConnectSDK.UserInfo, Models.UserInfo>();
+            config.CreateMap<AdobeConnectSDK.Model.MeetingItem, Models.MeetingItem>();
+            config.CreateMap<AdobeConnectSDK.Model.UserInfo, Models.UserInfo>();
         }
     }
 }

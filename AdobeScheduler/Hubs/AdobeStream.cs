@@ -9,6 +9,7 @@ using AdobeScheduler.Models;
 using System.Globalization;
 using System.Web.UI;
 using System.Threading.Tasks;
+using AdobeConnectSDK.Model;
 
 namespace AdobeScheduler.Hubs
 {
@@ -277,18 +278,21 @@ namespace AdobeScheduler.Hubs
         /// Function that gets and returns all rooms
         /// </summary>
         /// <returns></returns>
-        public List<List<string>> GetAllRooms()
+        public List<List<String>> GetAllRooms()
         {
             LoginInfo login = LoginInfo.currentUser;
-            StatusInfo sinfo;
+
             AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
-            List<List<string>> list = new List<List<string>> { };
-            if (adobeObj.Login(login.username, login.password, out sinfo))
-            {
-                bool isAdmin = adobeObj.IsAdmin(adobeObj.GetUserInfo().user_id);
+            List<List<String>> list = new List<List<String>>();
+
+            adobeObj.Login(login.username, login.password);
+
+            if (adobeObj.GetUserInfo().Result.Login != null)
+            {                
+                bool isAdmin = SAUAdobeConnectSDK.SAUOC.IsAdmin(adobeObj, adobeObj.GetUserInfo().Result.UserId);
                 if (isAdmin)
                 {
-                    list = adobeObj.GetSharedList();
+                    list = SAUAdobeConnectSDK.SAUOC.GetSharedList(adobeObj);
                 }                
             }
             return list;
@@ -315,7 +319,7 @@ namespace AdobeScheduler.Hubs
         public string Login(string username, string password=null)
         {
             AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
-            StatusInfo sInfo;
+            
             using (AdobeConnectDB _db = new AdobeConnectDB())
             {
                 var query = _db.AdobeUserInfo.Where(u => u.Username == username).FirstOrDefault();
@@ -323,7 +327,8 @@ namespace AdobeScheduler.Hubs
                 {
                     password = query.Password;
                 }
-                if (adobeObj.Login(username, password, out sInfo) == false)
+                
+                if (adobeObj.Login(username, password).Result)
                 {
                     if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                     { return ""; }
@@ -573,14 +578,10 @@ namespace AdobeScheduler.Hubs
                 {
                     throw;
                 }
-                List<String> meetingList = new List<String>();
-                if (adobeObj.Login(username, query.Password, out sInfo)){
-                    var myMeeting = adobeObj.GetMyMeetings();
-                    foreach(AdobeConnectSDK.MeetingItem myMeetingItem in myMeeting){
-                        meetingList.Add(myMeetingItem.meeting_name);
-                    }
-                    var result = meetingList.Contains(meeting);
-                    return result;
+
+                var loginResult = adobeObj.Login(username, query.Password);
+                if (loginResult != null){
+                   return AdobeConnectSDK.Extensions.MeetingManagement.GetMyMeetings(adobeObj).Result.Count() > 0;                                      
                 }
                 return false;
             }

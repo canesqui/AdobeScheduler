@@ -23,6 +23,7 @@
     <TargetFrameworkProfile />
     <WebGreaseLibPath>..\packages\WebGrease.1.5.2\lib</WebGreaseLibPath>
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,7 +32,7 @@
     <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>1</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -219,19 +220,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdobeConnectSDK\AdobeConnectXmlAPI.cs" />
-    <Compile Include="AdobeConnectSDK\EventInfo.cs" />
-    <Compile Include="AdobeConnectSDK\HttpUtilsInternal.cs" />
-    <Compile Include="AdobeConnectSDK\MeetingDetail.cs" />
-    <Compile Include="AdobeConnectSDK\MeetingItem.cs" />
-    <Compile Include="AdobeConnectSDK\MeetingUpdateItem.cs" />
-    <Compile Include="AdobeConnectSDK\Permissions.cs" />
-    <Compile Include="AdobeConnectSDK\Principal.cs" />
-    <Compile Include="AdobeConnectSDK\scoInfo.cs" />
-    <Compile Include="AdobeConnectSDK\StatusInfo.cs" />
-    <Compile Include="AdobeConnectSDK\TraceTool.cs" />
-    <Compile Include="AdobeConnectSDK\TransactionInfo.cs" />
-    <Compile Include="AdobeConnectSDK\UserInfo.cs" />
     <Compile Include="App_Start\BootstrapBundleConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -253,6 +241,7 @@
     <Compile Include="Models\Appointment.cs" />
     <Compile Include="Models\DatabaseInitializer.cs" />
     <Compile Include="Models\MeetingItem.cs" />
+    <Compile Include="Models\StatusInfo.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -477,7 +466,16 @@
     <Content Include="Views\Shared\_validationSummary.cshtml" />
     <Content Include="Views\Shared\_RoomLayout.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\AdobeConnectSDK\Source\AdobeConnectSDK\AdobeConnectSDK.csproj">
+      <Project>{037eb3bd-6be6-4bce-b538-9677aee525aa}</Project>
+      <Name>AdobeConnectSDK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SAUAdobeConnectSDK\SAUAdobeConnectSDK.csproj">
+      <Project>{9515ac87-097d-4d1e-80c3-aa81864503dc}</Project>
+      <Name>SAUAdobeConnectSDK</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
@@ -486,6 +484,7 @@
       <DependentUpon>201304291925063_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
