@@ -9,6 +9,7 @@ using AdobeScheduler.Models;
 using System.Globalization;
 using System.Web.UI;
 using System.Threading.Tasks;
+using DotNetOpenAuth.OpenId.Provider;
 
 namespace AdobeScheduler.Hubs
 {
@@ -316,30 +317,23 @@ namespace AdobeScheduler.Hubs
         {
             AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
             StatusInfo sInfo;
-            using (AdobeConnectDB _db = new AdobeConnectDB())
+            
+            if (adobeObj.Login(username, password, out sInfo) == false)
             {
-                var query = _db.AdobeUserInfo.Where(u => u.Username == username).FirstOrDefault();
-                if (password == null)
-                {
-                    password = query.Password;
-                }
-                if (adobeObj.Login(username, password, out sInfo) == false)
-                {
-                    if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-                    { return ""; }
-                    else
-                   { 
-                        return "";
-                    }
-                }
+                if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                { return ""; }
                 else
-                {
-                    LoginInfo.currentUser = new LoginInfo(username, password);
-                    string _targetUrl = string.Format("http://turner.southern.edu/api/xml?action=login&login={0}&password={1}", username, password);                   
-                    return _targetUrl;                    
+                { 
+                    return "";
                 }
-                
             }
+            else
+            {
+                LoginInfo.currentUser = new LoginInfo(username, password);
+                string _targetUrl = string.Format("http://turner.southern.edu/api/xml?action=login&login={0}&password={1}", username, password);                   
+                return _targetUrl;                    
+            }
+                
         }       
 
         public void addSelf(Appointment data, string id, bool isChecked, bool isUpdate, int max, bool jsHandle, string jsDate)
@@ -558,32 +552,21 @@ namespace AdobeScheduler.Hubs
             }
         }
 
-        public bool checkHost(string username, string meeting)
+        public bool checkHost(string sessionInfo, string username, string meeting)
         {
             AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
-            StatusInfo sInfo;
 
-            using (AdobeConnectDB _db = new AdobeConnectDB())
-            {
-                LoginUser query;
-                try{
-                    query = _db.AdobeUserInfo.Where(u => u.Username == username).FirstOrDefault();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                List<String> meetingList = new List<String>();
-                if (adobeObj.Login(username, query.Password, out sInfo)){
-                    var myMeeting = adobeObj.GetMyMeetings();
-                    foreach(AdobeConnectSDK.MeetingItem myMeetingItem in myMeeting){
-                        meetingList.Add(myMeetingItem.meeting_name);
-                    }
-                    var result = meetingList.Contains(meeting);
-                    return result;
-                }
-                return false;
+            List<String> meetingList = new List<String>();            
+
+            adobeObj.SetSessionInfo(sessionInfo);
+
+            var myMeeting = adobeObj.GetMyMeetings();
+                    
+            foreach (AdobeConnectSDK.MeetingItem myMeetingItem in myMeeting){
+                  meetingList.Add(myMeetingItem.meeting_name);
             }
-        }
+            var result = meetingList.Contains(meeting);
+            return result;            
+        }        
     }
 }

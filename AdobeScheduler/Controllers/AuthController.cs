@@ -24,6 +24,7 @@ namespace AdobeScheduler.Controllers
                 StatusInfo sInfo;
                 if (con.Login(user.Username, user.Password, out sInfo))
                 {
+
                     int id = int.Parse(con.GetUserInfo().user_id);
                     Identity Id = new Identity( id , user.Username, "T");
                     DateTime expire = DateTime.Now.AddMinutes(FormsAuthentication.Timeout.TotalMinutes);
@@ -32,25 +33,12 @@ namespace AdobeScheduler.Controllers
                     HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, hashTicket);
                     HttpContext.Response.Cookies.Add(cookie);
                     UserSession userSession = new UserSession(Utilities.Adapter<Models.MeetingItem[], AdobeConnectSDK.MeetingItem[]>(con.GetMyMeetings()), Utilities.Adapter<Models.UserInfo, AdobeConnectSDK.UserInfo>(con.GetUserInfo()));
-                    using (AdobeConnectDB _db = new AdobeConnectDB()) {
-                        var check = _db.AdobeUserInfo.Where(u => u.Username == user.Username).FirstOrDefault();
-                        if (check == null)
-                        {
-                            var newlogin = new LoginUser(); 
-                            newlogin.Username = user.Username;
-                            newlogin.Password = user.Password; 
-                            newlogin.Id = id;
-                            _db.AdobeUserInfo.Add(newlogin);
-                            _db.SaveChanges();
-                        }
-                        else
-                        {
-                            check = user;
-                            _db.SaveChanges();
-                        }
-                       
-                    }
+                    
                     Session["UserSession"] = userSession;
+
+                    HttpCookie sessionInfo = new HttpCookie("BREEZESESSION");
+                    sessionInfo.Value = sInfo.SessionInfo;
+                    HttpContext.Response.Cookies.Add(sessionInfo);
                 }
                 else {
                     return View("Login");
