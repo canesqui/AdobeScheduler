@@ -18,8 +18,5 @@ namespace AdobeScheduler.Models
 
         [XmlElement]
         public string login;
-
-        [XmlElement]
-        public string sessionInfo;
     }
 }
