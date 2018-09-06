@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
-using AdobeConnectSDK;
 using System.Security.Principal;
 
 namespace AdobeScheduler.Models
@@ -25,9 +24,9 @@ namespace AdobeScheduler.Models
     {
         public int Id { get; set; }
         public string FullName { get; set; }
-        public MeetingItem[] MyMeetings {get; set;}
+        public Models.MeetingItem[] MyMeetings {get; set;}
 
-        public UserSession(MeetingItem[] MeetingItems, UserInfo UserInfo)
+        public UserSession(Models.MeetingItem[] MeetingItems, UserInfo UserInfo)
         {
             this.FullName = UserInfo.name;
             this.MyMeetings = MeetingItems;

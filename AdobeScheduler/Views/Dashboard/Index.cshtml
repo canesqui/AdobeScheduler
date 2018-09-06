@@ -23,7 +23,7 @@
                         <option selected="selected" disabled="disabled" data-path="" data-url="">Select Your Room:</option>
                         @if (Model.Session.MyMeetings != null)
                         {
-                            foreach (AdobeConnectSDK.MeetingItem myMeetingItem in Model.Session.MyMeetings)
+                            foreach (AdobeScheduler.Models.MeetingItem myMeetingItem in Model.Session.MyMeetings)
                             {
                                 <option data-path="@myMeetingItem.url_path" data-url="@myMeetingItem.FullUrl">@myMeetingItem.meeting_name</option>
                             }
@@ -66,7 +66,7 @@
                 </div>
                 <div id="error"></div>
                 <div id="meetingCrashError"></div>
-
+                </div>
 </fieldset>
     </form>
 </div>

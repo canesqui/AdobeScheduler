@@ -12,12 +12,13 @@ namespace AdobeScheduler.Security
     public class Identity : IIdentity
     {
 
-        public Identity(int id, string email, string roles)
+        public Identity(int id, string email, string roles, string adobeConnectSDKsessionId)
         {
             this.ID = id;
             this.Name = email;
             this.Email = email;
             this.Roles = roles;
+            this.AdobeConnectSDKsessionId = adobeConnectSDKsessionId;
         }
 
 
@@ -49,7 +50,7 @@ namespace AdobeScheduler.Security
 
         public string GetUserData()
         {
-            return string.Format("{0}|{1}", ID, Roles);
+            return string.Format("{0}|{1}|{2}", ID, Roles, AdobeConnectSDKsessionId);
         }
 
 
@@ -57,5 +58,6 @@ namespace AdobeScheduler.Security
         public string Email { get; private set; }
         public int ID { get; private set; }
         public string Roles { get; private set; }
+        public string AdobeConnectSDKsessionId { get; set; }
     }
 }
