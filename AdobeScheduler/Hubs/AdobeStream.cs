@@ -40,7 +40,7 @@ namespace AdobeScheduler.Hubs
     
     [HubName("adobeConnect")]
     public class AdobeStream : Hub
-    {
+    {        
         private class LoginInfo
         {
             public static LoginInfo currentUser;
@@ -550,9 +550,9 @@ namespace AdobeScheduler.Hubs
             }
         }
 
-        public bool checkHost(string sessionInfo, string username, string meeting)
+        public bool checkHost(string username, string meeting)
         {
-
+            
             var httpContext = Context.Request.GetHttpContext();
             
             var cookie = httpContext.Request.Cookies[".ASPXAUTH"];

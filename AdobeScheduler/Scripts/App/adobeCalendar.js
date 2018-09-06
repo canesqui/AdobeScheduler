@@ -109,26 +109,6 @@ $(function () {
             $('#addAppointment').dialog('close');
         }
     }
-
-    getCookie = function (cookieName) {        
-            var name = cookieName + "=";
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                    return c;
-                }
-            }
-            return "";
-    } 
-
-    getSessionInfo = function (cookie, searchString) {
-        var n = cookie.search(searchString);
-        return cookie.substring(n + searchString.length, cookie.length);
-    }
     
     adobeConnect.client.addSelf = function (add, event, max, jsHandle) {
         //less or equal
@@ -537,7 +517,7 @@ $(function () {
 
 
 
-                adobeConnect.server.checkHost(getSessionInfo(getCookie('BREEZESESSION'), 'BREEZESESSION='), $('#content').attr('data-userId'), event.title).done(function (e) {                    
+                adobeConnect.server.checkHost($('#content').attr('data-userId'), event.title).done(function (e) {                    
                     if (e && !event.archived) {
                         var html = '<a id="editEvent" href="#' + event.id + '"><i class="ui-icon ui-icon-pencil" style="float:right;"></i></a>';
                         element.find(".fc-event-title").append(

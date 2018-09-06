@@ -1,6 +1,5 @@
 ﻿using AdobeScheduler.Models;
 using AdobeScheduler.Security;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AdobeConnectSDK;
@@ -23,7 +22,7 @@ namespace AdobeScheduler.Controllers
                 AdobeConnectXmlAPI con = new AdobeConnectXmlAPI();
                 StatusInfo sInfo;
                 if (con.Login(user.Username, user.Password, out sInfo))
-                {
+                {                    
                     int id = int.Parse(con.GetUserInfo().user_id);
                     Identity Id = new Identity( id , user.Username, "T", sInfo.SessionInfo);
                     DateTime expire = DateTime.Now.AddMinutes(FormsAuthentication.Timeout.TotalMinutes);
