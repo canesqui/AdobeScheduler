@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdobeScheduler", "AdobeSche
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAUAdobeConnectSDK", "SAUAdobeConnectSDK\SAUAdobeConnectSDK.csproj", "{9515AC87-097D-4D1E-80C3-AA81864503DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdobeConnectSDK", "..\AdobeConnectSDK\Source\AdobeConnectSDK\AdobeConnectSDK.csproj", "{037EB3BD-6BE6-4BCE-B538-9677AEE525AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdobeConnectSDK", "..\Original-Unchanged\AdobeConnectSDK-master\Source\AdobeConnectSDK\AdobeConnectSDK.csproj", "{037EB3BD-6BE6-4BCE-B538-9677AEE525AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
