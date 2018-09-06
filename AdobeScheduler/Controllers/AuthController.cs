@@ -24,9 +24,8 @@ namespace AdobeScheduler.Controllers
                 StatusInfo sInfo;
                 if (con.Login(user.Username, user.Password, out sInfo))
                 {
-
                     int id = int.Parse(con.GetUserInfo().user_id);
-                    Identity Id = new Identity( id , user.Username, "T");
+                    Identity Id = new Identity( id , user.Username, "T", sInfo.SessionInfo);
                     DateTime expire = DateTime.Now.AddMinutes(FormsAuthentication.Timeout.TotalMinutes);
                     FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(Id.ID, user.Username, DateTime.Now, expire, false, Id.GetUserData());
                     string hashTicket = FormsAuthentication.Encrypt(ticket);
@@ -35,10 +34,6 @@ namespace AdobeScheduler.Controllers
                     UserSession userSession = new UserSession(Utilities.Adapter<Models.MeetingItem[], AdobeConnectSDK.MeetingItem[]>(con.GetMyMeetings()), Utilities.Adapter<Models.UserInfo, AdobeConnectSDK.UserInfo>(con.GetUserInfo()));
                     
                     Session["UserSession"] = userSession;
-
-                    HttpCookie sessionInfo = new HttpCookie("BREEZESESSION");
-                    sessionInfo.Value = sInfo.SessionInfo;
-                    HttpContext.Response.Cookies.Add(sessionInfo);
                 }
                 else {
                     return View("Login");

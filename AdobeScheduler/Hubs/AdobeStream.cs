@@ -3,13 +3,11 @@ using Microsoft.AspNet.SignalR.Hubs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Security;
 using System.Web;
 using AdobeConnectSDK;
 using AdobeScheduler.Models;
-using System.Globalization;
-using System.Web.UI;
 using System.Threading.Tasks;
-using DotNetOpenAuth.OpenId.Provider;
 
 namespace AdobeScheduler.Hubs
 {
@@ -554,11 +552,18 @@ namespace AdobeScheduler.Hubs
 
         public bool checkHost(string sessionInfo, string username, string meeting)
         {
+
+            var httpContext = Context.Request.GetHttpContext();
+            
+            var cookie = httpContext.Request.Cookies[".ASPXAUTH"];
+
+            FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
+
             AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
 
             List<String> meetingList = new List<String>();            
 
-            adobeObj.SetSessionInfo(sessionInfo);
+            adobeObj.SetSessionInfo(authTicket.UserData.Split('|')[2]);
 
             var myMeeting = adobeObj.GetMyMeetings();
                     
