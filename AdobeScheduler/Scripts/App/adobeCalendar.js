@@ -109,6 +109,7 @@ $(function () {
             $('#addAppointment').dialog('close');
         }
     }
+    
     adobeConnect.client.addSelf = function (add, event, max, jsHandle) {
         //less or equal
         var html2 = null;
@@ -514,7 +515,9 @@ $(function () {
                                 .append(roomHtml);
                 }
 
-                adobeConnect.server.checkHost($('#content').attr('data-userId'), event.title).done(function (e) {
+
+
+                adobeConnect.server.checkHost($('#content').attr('data-userId'), event.title).done(function (e) {                    
                     if (e && !event.archived) {
                         var html = '<a id="editEvent" href="#' + event.id + '"><i class="ui-icon ui-icon-pencil" style="float:right;"></i></a>';
                         element.find(".fc-event-title").append(
@@ -755,7 +758,7 @@ $(function () {
                             }
 
                         });
-                        window.open(event.url, event.title);
+                        window.open(event.adobeUrl, event.title);
                     }
                 }
                 return false;

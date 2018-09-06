@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\AdobeScheduler",
+    "\\AdobeScheduler\\App_Data",
+    "\\AdobeScheduler\\Controllers",
+    "\\AdobeScheduler\\Hubs",
+    "\\AdobeScheduler\\Views\\Auth",
+    "\\AdobeScheduler\\Views\\Dashboard"
+  ],
+  "SelectedNode": "\\AdobeScheduler\\AdobeScheduler.csproj",
+  "PreviewInSolutionExplorer": false
+}

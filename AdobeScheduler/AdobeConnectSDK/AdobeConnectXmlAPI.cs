@@ -35,7 +35,7 @@ using System.Xml.XPath;
 using System.Xml.Serialization;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
-
+using System.Web;
 
 namespace AdobeConnectSDK
 {
@@ -85,7 +85,7 @@ namespace AdobeConnectSDK
             m_proxyUrl = ProxyUrl;
             m_netUser = NetUser;
             m_netPassword = NetPassword;
-            m_netDomain = NetDomain;
+            m_netDomain = "turner.southern.edu";
             m_sessionParam = true;
 
             if (string.IsNullOrEmpty(m_serviceURL)) throw new ArgumentNullException("Configuration parameter 'serviceURL' cant be null.");
@@ -188,6 +188,11 @@ namespace AdobeConnectSDK
 
             StatusInfo iStatus;
             _ProcessRequest("logout", null, out iStatus);
+        }
+
+        public void SetSessionInfo(string sessionInfo)
+        {                        
+            this.m_SessionInfo = sessionInfo;
         }
 
         /// <summary>
