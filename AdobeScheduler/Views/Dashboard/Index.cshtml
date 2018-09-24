@@ -1,25 +1,22 @@
 ﻿@model AdobeScheduler.Models.ViewObject
 @{
     ViewBag.Title = "Dashboard";
-    
+
 }
-<script>
-    var view = $('#calendar').fullCalendar('getView');
-    console.log("view", view);
-</script>
+
 <!--Legacy reserve_room button-->
 <!--<div id="main-menu">
         <a id="reserve_room"><i class="icon-plus">+</i> <span>RESERVE<br />ROOM</span></a>
         <div id="task"></div>
 </div>  -->
- 
+
 <div id="addAppointment">
-    <form id="modal-form" class="form-horizontal" accept-charset="UTF-8"  data-remote="true" >
+    <form id="modal-form" class="form-horizontal" accept-charset="UTF-8" data-remote="true">
         <fieldset>
             <div class="control-group">
                 <label class="control-label">Select Your Room:</label>
                 <div class="controls">
-                    <select id="class" width="300" style="width: 300px">
+                    <select id="class" class="ronaldo" width="300" style="width: 300px">
                         <option selected="selected" disabled="disabled" data-path="" data-url="">Select Your Room:</option>
                         @if (Model.Session.MyMeetings != null)
                         {
@@ -34,7 +31,7 @@
                         }
                     </select>
                     <a id="room_link" href=""></a>
-                </div>
+                </div>                
                 <hr />
                 <label class="control-label">Select a Date And Time:</label>
                 <div class="controls">
@@ -66,11 +63,15 @@
                 </div>
                 <div id="error"></div>
                 <div id="meetingCrashError"></div>
-                </div>
-</fieldset>
+            </div>
+        </fieldset>
     </form>
 </div>
 
 <div id="busy1" class="square"></div>
 <div id="calendar"></div>
 
+<script>
+    var view = $('#calendar').fullCalendar('getView');
+    console.log("view", view);    
+</script>

@@ -1,8 +1,4 @@
-﻿/// <reference path="~/Scripts/jquery-1.9.1.js"" />
-///// <reference path="~/Scripts/jquery.signalR-1.0.0.js" />
-/// <reference path="~/Scripts/fullcalendar.js" />
-
-/* Adobe Calendar core file
+﻿/* Adobe Calendar core file
  * Modified: 5/30/2018
  * Bernardo Martinez
  * Change: Update/Upgrade polling subroutines to decresease the load time
@@ -16,6 +12,7 @@ $(function () {
     //Append loading text
     $('#calendar').html("<div id='calendarLoad'><h1>loading. . .</h1></div>");
     Events = {};
+
     $.pnotify.defaults.styling = "jqueryui";
     window.alert = function (message) {
         $.pnotify({
@@ -411,8 +408,9 @@ $(function () {
             });
         }
     }
+    /*
     OpenEvents = setInterval(function () {
-        var events = $('#calendar').fullCalendar('clientEvents');
+        var events = $('#calendar').fullCalendar('clientEvents');                
         events.forEach(function (event) {
             if (moment() >= event.start) {
                 if (!event.open && !event.archived) {
@@ -436,7 +434,7 @@ $(function () {
             }
         });
     }, 30000);
-
+    */
     Calendar = function (events) {
         //remove loading text, init adobecal
         $('#calendarLoad').remove();
@@ -811,9 +809,14 @@ $(function () {
                 for (var i = 0; i < result.length; i++) {
                     $('#class').append("<option data-path=\"" + result[i][1] + "\" data-url=\"" + "http://turner.southern.edu" +
                         result[i][1] + "\">" + result[i][0] + "</option>");
-                }
-                //$("#class").searchit({ textFieldClass: 'searchbox' });
-
+                }                
+                /*
+                $(".chosen-select").chosen();
+                $("#class").trigger("chosen:updated");
+                console.log('chosen executed');                                */
+                $(".ronaldo").autocomplete({
+                    autoFocus: true
+                });
             }
         });
     });

@@ -39,15 +39,27 @@ namespace AdobeScheduler
                 "~/Content/fullcalendar.css"));
 
             bundles.Add(new ScriptBundle("~/app").Include(
-                "~/Scripts/jquery.signalR-1.0.1.js",
+                "~/Scripts/jquery.js",
+                "~/Scripts/moment.js",
+                "~/Scripts/jquery.signalR-{version}.js",
+                "~/Scripts/jquery.pnotify.js",
                 "~/Scripts/fullcalendar.js",
-                "~/Scripts/App/adobeCalendar.js"
+                "~/Scripts/jquery-ui-timepicker-addon.js",
+                "~/Scripts/App/adobeCalendar.js",
+                "~/Scripts/jquery-ui-{version}.js",
+                "~/Scripts/jquery-ui-timepicker-addon-{version}.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/auth").Include(
-               "~/Scripts/jquery.signalR-1.0.1.js",
-               "~/Scripts/fullcalendar.js",
-               "~/Scripts/App/login.js"
+               "~/Scripts/jquery.js",
+               "~/Scripts/moment.js",
+               "~/Scripts/jquery.signalR-{version}.js",
+               "~/Scripts/jquery.pnotify.js",
+               "~/Scripts/fullcalendar.js",               
+               "~/Scripts/App/adobeCalendar.js",
+               "~/Scripts/jquery-ui-{version}.js",
+               "~/Scripts/jquery-ui-timepicker-addon.js",               
+               "~/Scripts/App/login.js"              
                ));
 
             bundles.Add(new StyleBundle("~/content/css").Include(

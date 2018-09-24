@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using AdobeConnectSDK;
+using AdobeScheduler.Models;
+using log4net;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
+using SAUAdobeConnectSDK;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
-using System.Web.Security;
-using System.Web;
-using AdobeConnectSDK;
-using AdobeScheduler.Models;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Security;
 
 namespace AdobeScheduler.Hubs
 {
@@ -37,12 +40,25 @@ namespace AdobeScheduler.Hubs
         }
 
     }
-    
+
+    public class UnhandledExceptionHandlingModule : HubPipelineModule
+    {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        protected override void OnIncomingError(ExceptionContext exceptionContext, IHubIncomingInvokerContext invokerContext)
+        {
+            MethodDescriptor method = invokerContext.MethodDescriptor;
+            string errorMessage = String.Format("{0}.{1}({2}) threw the following uncaught exception:", method.Hub.Name, method.Name, String.Join(",", invokerContext.Args));                                
+            Log.Fatal(errorMessage, exceptionContext.Error);            
+        }
+    }
+
     [HubName("adobeConnect")]
     public class AdobeStream : Hub
-    {        
+    {
         private class LoginInfo
         {
+           
             public static LoginInfo currentUser;
             public LoginInfo(string un, string pw)
             {
@@ -278,16 +294,22 @@ namespace AdobeScheduler.Hubs
         /// <returns></returns>
         public List<List<string>> GetAllRooms()
         {
-            LoginInfo login = LoginInfo.currentUser;
-            StatusInfo sinfo;
+            var a = this.Context.RequestCookies;
+
+            LoginInfo login = LoginInfo.currentUser;            
             AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
             List<List<string>> list = new List<List<string>> { };
-            if (adobeObj.Login(login.username, login.password, out sinfo))
+            if (adobeObj.Login(login.username, login.password).Result)
             {
-                bool isAdmin = adobeObj.IsAdmin(adobeObj.GetUserInfo().user_id);
+                bool isAdmin = AdobeConnectSDK.Extensions.PrincipalManagement.IsAdmin(adobeObj, adobeObj.GetUserInfo().Result.UserId);
                 if (isAdmin)
-                {
-                    list = adobeObj.GetSharedList();
+                {                   
+                    var result = AdobeConnectSDK.Extensions.MeetingManagement.GetSharedList(adobeObj);
+
+                    foreach (var item in result.Result)
+                    {
+                        list.Add(new List<string>() { item.MeetingName, item.UrlPath });
+                    }                    
                 }                
             }
             return list;
@@ -314,9 +336,8 @@ namespace AdobeScheduler.Hubs
         public string Login(string username, string password=null)
         {
             AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
-            StatusInfo sInfo;
             
-            if (adobeObj.Login(username, password, out sInfo) == false)
+            if (!adobeObj.Login(username, password).Result)
             {
                 if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 { return ""; }
@@ -326,7 +347,7 @@ namespace AdobeScheduler.Hubs
                 }
             }
             else
-            {
+            {                
                 LoginInfo.currentUser = new LoginInfo(username, password);
                 string _targetUrl = string.Format("http://turner.southern.edu/api/xml?action=login&login={0}&password={1}", username, password);                   
                 return _targetUrl;                    
@@ -381,9 +402,7 @@ namespace AdobeScheduler.Hubs
             DateTime DateS = Date.AddHours(-2);
             DateTime DateM = Date.AddMonths(-1);
             using (AdobeConnectDB _db = new AdobeConnectDB())
-            {
-                AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
-
+            {                
                 List<Appointment> query = new List<Appointment>();
                 //querying the data for the population of the calandar object
                 try
@@ -551,27 +570,28 @@ namespace AdobeScheduler.Hubs
         }
 
         public bool checkHost(string username, string meeting)
-        {
-            
+        {            
             var httpContext = Context.Request.GetHttpContext();
             
             var cookie = httpContext.Request.Cookies[".ASPXAUTH"];
 
             FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
 
-            AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
+            CustomCommunicationProvider customCommunicationProvider = new CustomCommunicationProvider(authTicket.UserData.Split('|')[2], ConfigurationManager.AppSettings["NetDomain"]);
+                        
+            AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI(customCommunicationProvider);
+            
+            List<String> meetingList = new List<String>();                        
 
-            List<String> meetingList = new List<String>();            
-
-            adobeObj.SetSessionInfo(authTicket.UserData.Split('|')[2]);
-
-            var myMeeting = adobeObj.GetMyMeetings();
-                    
-            foreach (AdobeConnectSDK.MeetingItem myMeetingItem in myMeeting){
-                  meetingList.Add(myMeetingItem.meeting_name);
+            var myMeetings = AdobeConnectSDK.Extensions.MeetingManagement.GetMyMeetings(adobeObj).Result;
+                                                       
+            foreach (var myMeetingItem in myMeetings)
+            {
+                  meetingList.Add(myMeetingItem.MeetingName);
             }
             var result = meetingList.Contains(meeting);
-            return result;            
+
+            return result;                                    
         }        
     }
 }

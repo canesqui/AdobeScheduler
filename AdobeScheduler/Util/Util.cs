@@ -13,7 +13,16 @@ namespace AdobeScheduler.Util
             where TSource : class
             where TDestination : class
         {
-            return Mapper.Map<TDestination>(source);
+            try
+            {
+                return Mapper.Map<TDestination>(source);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }                                                        
     }
 }

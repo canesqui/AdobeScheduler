@@ -6,6 +6,7 @@ using AdobeConnectSDK;
 using System.Web.Security;
 using System;
 using AdobeScheduler.Util;
+using AdobeConnectSDK.Model;
 
 namespace AdobeScheduler.Controllers
 {
@@ -19,18 +20,20 @@ namespace AdobeScheduler.Controllers
         {
             if (ModelState.IsValid)
             {
-                AdobeConnectXmlAPI con = new AdobeConnectXmlAPI();
-                StatusInfo sInfo;
-                if (con.Login(user.Username, user.Password, out sInfo))
+                AdobeConnectXmlAPI con = new AdobeConnectXmlAPI();                
+                if (con.Login(user.Username, user.Password).Result)
                 {                    
-                    int id = int.Parse(con.GetUserInfo().user_id);
-                    Identity Id = new Identity( id , user.Username, "T", sInfo.SessionInfo);
+                    int id = int.Parse(con.GetUserInfo().Result.UserId);
+                    Identity Id = new Identity( id , user.Username, "T", con.GetUserInfo().SessionInfo);
                     DateTime expire = DateTime.Now.AddMinutes(FormsAuthentication.Timeout.TotalMinutes);
                     FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(Id.ID, user.Username, DateTime.Now, expire, false, Id.GetUserData());
                     string hashTicket = FormsAuthentication.Encrypt(ticket);
                     HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, hashTicket);
                     HttpContext.Response.Cookies.Add(cookie);
-                    UserSession userSession = new UserSession(Utilities.Adapter<Models.MeetingItem[], AdobeConnectSDK.MeetingItem[]>(con.GetMyMeetings()), Utilities.Adapter<Models.UserInfo, AdobeConnectSDK.UserInfo>(con.GetUserInfo()));
+                    var userMeetings = Utilities.Adapter<Models.MeetingItem[], EnumerableResultStatus<AdobeConnectSDK.Model.MeetingItem>>(AdobeConnectSDK.Extensions.MeetingManagement.GetMyMeetings(con));
+                    var sessionInfo = Utilities.Adapter<Models.UserInfo, AdobeConnectSDK.Model.UserInfo>(con.GetUserInfo().Result);
+
+                    UserSession userSession = new UserSession(userMeetings, sessionInfo);
                     
                     Session["UserSession"] = userSession;
                 }
@@ -56,8 +59,10 @@ namespace AdobeScheduler.Controllers
         {
             FormsAuthentication.SignOut();
             Session.Abandon();
-            HttpCookie cookie1 = new HttpCookie(FormsAuthentication.FormsCookieName, "");
-            cookie1.Expires = DateTime.Now.AddYears(-1);
+            HttpCookie cookie1 = new HttpCookie(FormsAuthentication.FormsCookieName, "")
+            {
+                Expires = DateTime.Now.AddYears(-1)
+            };
             Response.Cookies.Add(cookie1);
             return RedirectToAction("Index", "Dashboard");
         }

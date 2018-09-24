@@ -14,6 +14,8 @@ using System.Web.Security;
 using System.Web.SessionState;
 using System.Data.Entity;
 using AutoMapper;
+using log4net;
+using Microsoft.AspNet.SignalR;
 
 namespace AdobeScheduler
 {
@@ -22,7 +24,8 @@ namespace AdobeScheduler
 
     public class MvcApplication : System.Web.HttpApplication
     {
-       
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         protected void Application_Start(object sender, EventArgs e)
         {
             AreaRegistration.RegisterAllAreas();
@@ -32,6 +35,14 @@ namespace AdobeScheduler
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
             Mapper.Initialize(Util.AutoMapperConfiguration.Configure);
+            GlobalHost.HubPipeline.AddModule(new Hubs.UnhandledExceptionHandlingModule());
+        }
+
+        protected void Application_Error()
+        {
+            var ex = Server.GetLastError();
+            //log the error!
+            Log.Error(ex);
         }
 
         void MvcApplication_PostAuthenticateRequest(object sender, EventArgs e)

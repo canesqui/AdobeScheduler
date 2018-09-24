@@ -400,9 +400,9 @@ div.fc-view-agendaDay .fc-event-time, div.fc-view-agendaDay .fc-event-title { /*
     border: none !important;
 }
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
-    font-family:OpenSansLight !important;
-    font-size:12px !important;
-    font-weight:normal;
+    font-family: OpenSansLight !important;
+    font-size: 12px !important;
+    font-weight: normal;
 }
 .ui-corner-all {
     border-bottom-right-radius:0px !important;
