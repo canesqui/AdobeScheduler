@@ -1,10 +1,8 @@
 ﻿
 $(function () {
     var adobeConnect = $.connection.adobeConnect;
-    $(document).keypress(function (event) {
-        console.log(event);
-        var keycode = (event.keyCode ? event.keyCode : event.which);
-        console.log(keycode);
+    $(document).keypress(function (event) {        
+        var keycode = (event.keyCode ? event.keyCode : event.which);        
         if (keycode === '13') {
             $('button#login').click();
         }

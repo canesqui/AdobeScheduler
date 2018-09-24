@@ -43,11 +43,10 @@ namespace AdobeScheduler
                 "~/Scripts/moment.js",
                 "~/Scripts/jquery.signalR-{version}.js",
                 "~/Scripts/jquery.pnotify.js",
-                "~/Scripts/fullcalendar.js",
-                "~/Scripts/jquery-ui-timepicker-addon.js",
+                "~/Scripts/fullcalendar.js",               
                 "~/Scripts/App/adobeCalendar.js",
                 "~/Scripts/jquery-ui-{version}.js",
-                "~/Scripts/jquery-ui-timepicker-addon-{version}.js"
+                 "~/Scripts/jquery-ui-timepicker-addon.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/auth").Include(
