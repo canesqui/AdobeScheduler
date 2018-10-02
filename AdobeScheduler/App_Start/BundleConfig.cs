@@ -34,41 +34,46 @@ namespace AdobeScheduler
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
 
-
+            
             bundles.Add(new StyleBundle("~/Content/calendar").Include(
                 "~/Content/fullcalendar.css"));
 
             bundles.Add(new ScriptBundle("~/app").Include(
-                "~/Scripts/jquery.js",
-                "~/Scripts/moment.js",
+                "~/Scripts/moment.min.js",
+                "~/Scripts/jquery-{version}.js",
+                "~/Scripts/jquery-ui.js",
+                "~/Scripts/chosen.jquery.js",
                 "~/Scripts/jquery.signalR-{version}.js",
-                "~/Scripts/jquery.pnotify.js",
+                // "~/Scripts/jquery.pnotify.js",
+                "~/Scripts/pnotify.custom.min.js",
                 "~/Scripts/fullcalendar.js",               
-                "~/Scripts/App/adobeCalendar.js",
-                "~/Scripts/jquery-ui-{version}.js",
+                "~/Scripts/App/adobeCalendar.js",                
                  "~/Scripts/jquery-ui-timepicker-addon.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/auth").Include(
-               "~/Scripts/jquery.js",
-               "~/Scripts/moment.js",
+               "~/Scripts/moment.min.js",
+                "~/Scripts/jquery-{version}.js",
+               "~/Scripts/jquery-ui.js",
+               "~/Scripts/chosen.jquery.js",
                "~/Scripts/jquery.signalR-{version}.js",
-               "~/Scripts/jquery.pnotify.js",
+               //"~/Scripts/jquery.pnotify.js",
+               "~/Scripts/pnotify.custom.min.js",
                "~/Scripts/fullcalendar.js",               
-               "~/Scripts/App/adobeCalendar.js",
-               "~/Scripts/jquery-ui-{version}.js",
+               "~/Scripts/App/adobeCalendar.js",               
                "~/Scripts/jquery-ui-timepicker-addon.js",               
                "~/Scripts/App/login.js"              
                ));
 
             bundles.Add(new StyleBundle("~/content/css").Include(
-                "~/Content/fullcalendar.max.css",
-                "~/Content/datepickercss",
-                "~/Content/Site.css",
-                "~/Content/jquery.pnotify.default.css",
-                "~/Content/jquery.pnotify.default.icons.css"
+                 "~/Content/chosen.min.css",
+                 "~/Content/fullcalendar.css",
+                 "~/Content/datepickercss",
+                 "~/Content/Site.css",
+                 "~/Content/pnotify.custom.min.css"/*,
+                 "~/Content/jquery.pnotify.default.icons.css"*/
                 ));
-
+            
             bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
                         "~/Content/themes/base/jquery.ui.core.css",
                         "~/Content/themes/base/jquery.ui.resizable.css",
@@ -82,6 +87,7 @@ namespace AdobeScheduler
                         "~/Content/themes/base/jquery.ui.datepicker.css",
                         "~/Content/themes/base/jquery.ui.progressbar.css",
                         "~/Content/themes/base/jquery.ui.theme.css"));
+                        
         }
     }
 }

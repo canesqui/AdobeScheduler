@@ -11,24 +11,24 @@
     @Scripts.Render("~/auth")
 
     @Styles.Render("~/content/css")
-    <link href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/blitzer/jquery-ui.min.css" rel="stylesheet" />
+    <link href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/blitzer/jquery-ui.min.css" rel="stylesheet" />
     <link href="~/Content/jquery-ui-timepicker-addon.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.print.css" media="print" />
     <link rel="stylesheet" type="text/css" href="~/Content/fonts/opensans.css" />
 
 </head>
-<!--[if lt IE 7 ]> <body class="ie ie6"> <![endif]-->
-  <!--[if IE 7 ]> <body class="ie ie7 "> <![endif]-->
-  <!--[if IE 8 ]> <body class="ie ie8 "> <![endif]-->
-  <!--[if IE 9 ]> <body class="ie ie9 "> <![endif]-->
-  <!--[if (gt IE 9)|!(IE)]><!--> 
-  <body class=""> 
-      <!--<![endif]-->
-    <div class="row-fluid login">
-        <div class="dialog">
-            @RenderBody()
+    <!--[if lt IE 7 ]> <body class="ie ie6"> <![endif]-->
+    <!--[if IE 7 ]> <body class="ie ie7 "> <![endif]-->
+    <!--[if IE 8 ]> <body class="ie ie8 "> <![endif]-->
+    <!--[if IE 9 ]> <body class="ie ie9 "> <![endif]-->
+    <!--[if (gt IE 9)|!(IE)]><!-->
+    <body class="">
+        <!--<![endif]-->
+        <div class="row-fluid login">
+            <div class="dialog">
+                @RenderBody()
+            </div>
         </div>
-    </div>
-   <script src="~/SignalR/Hubs"></script>
-  </body>
+        <script src="~/SignalR/Hubs"></script>
+    </body>
 </html>
