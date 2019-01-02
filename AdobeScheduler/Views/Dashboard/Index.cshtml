@@ -28,17 +28,17 @@
                 <hr />
                 <label class="control-label">Select a Date And Time:</label>
                 <div class="controls">
-                    <input type="text" class="date_span" id="datetime" autocomplete="off"/>
+                    <input type="text" class="date_span" id="datetime" autocomplete="off" />
                 </div>
                 <label class="control-label">Event Repetition:</label>
                 <div class="controls">
-                    <select id="repitition" style="width: 80px">
+                    <select id="repetition" style="width: 80px">
                         <option value="None" selected>None</option>
                         <option value="Weekly">Weekly</option>
                         <option value="Biweekly">Biweekly</option>
                         <option value="Monthly">Monthly</option>
                     </select>
-                    <input type="text" class="date_span" id="repitition_date" autocomplete="off" />
+                    <input type="text" class="date_span" id="repetition_date" autocomplete="off" />
                 </div>
                 <hr />
                 <label class="control-label">Duration (in Min):</label>
@@ -52,10 +52,14 @@
                 <hr />
                 <label class="control-label">Number of Occupants:</label>
                 <div class="controls">
-                    <input id="occupants" type="text" value="70" class="numbersOnly input-mini" />
+                    <input id="occupants" type="text" class="numbersOnly" autocomplete="off" />
                 </div>
-                <div id="error"></div>
-                <div id="meetingCrashError"></div>
+                <div id="error">
+                    <div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> <span id="availableLicenses"></span></b> occupants <u>including the host</u> are available.</div>
+                </div>
+                <div id="meetingCrashError">
+                    <div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Beware of meetings after you </div>
+                </div>                
             </div>
         </fieldset>
     </form>
@@ -63,7 +67,7 @@
 
 <div id="busy1" class="square"></div>
 <h2 id="fctitle"></h2>
-<div id="calendar"></div>   
-<script>        
-    $(".chosen-select").chosen({ width: "300px" });
+<div id="calendar"></div>
+<script>
+    $(".chosen-select").chosen({ width: "300px" });    
 </script>

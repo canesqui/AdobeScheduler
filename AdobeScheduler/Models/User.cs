@@ -10,11 +10,13 @@ namespace AdobeScheduler.Models
     public class LoginUser 
     {
         public int Id { get; set; }
-        [Required]
+        [Required(ErrorMessage = "The username is required")]
+        [Display(Name = "Username")]
         [DataType(DataType.EmailAddress)]
         public string Username { get; set; }
-        [Required]
+        [Required(ErrorMessage = "The password is required")]
         [DataType(DataType.Password)]
+        [Display(Name = "Password")]
         public string Password { get; set; }
 
     }

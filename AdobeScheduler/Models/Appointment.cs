@@ -20,15 +20,15 @@ namespace AdobeScheduler.Models
         /// <summary>
         /// represents the id used for deletion of the series of events
         /// </summary>
-        public string repititionId { get; set; }
+        public string repetitionId { get; set; }
         /// <summary>
         /// represents the end date of the repetition
         /// </summary>
         public DateTime? endRepDate { get; set; }
         /// <summary>
-        /// represents the repitition type
+        /// represents the repetition type
         /// </summary>
-        public string repititionType { get; set; }
+        public string repetitionType { get; set; }
 
 
         public Appointment()

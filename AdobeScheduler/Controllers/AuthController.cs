@@ -38,6 +38,7 @@ namespace AdobeScheduler.Controllers
                     Session["UserSession"] = userSession;
                 }
                 else {
+                    ModelState.AddModelError("LogOnError", "The user name or password provided is incorrect.");
                     return View("Login");
                }
 

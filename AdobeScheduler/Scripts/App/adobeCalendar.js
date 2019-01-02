@@ -30,8 +30,8 @@ $(function () {
     //Append loading text
     $('#calendar').html("<div id='calendarLoad'><h1>loading. . .</h1></div>");
     Events = {};
-    
-    window.alert = function (message) {        
+
+    window.alert = function (message) {
         new PNotify({
             title: 'Alert',
             text: message,
@@ -39,9 +39,9 @@ $(function () {
             history: {
                 menu: true
             }
-        });    
+        });
 
-    };    
+    };
 
     IsUpdate = false;
     roomList = "";
@@ -60,10 +60,7 @@ $(function () {
         },
         height: 550,
         width: 675,
-        modal: true,
-        open: function () {
-            addAppointment(false, IsUpdate);
-        }
+        modal: true
     });
 
     $('body').on("change", "#class", function () {
@@ -74,12 +71,7 @@ $(function () {
         document.getElementById("room_link").href = opt;
     });
 
-    function newTab(url) {
-        var win = window.open(url, '_blank');
-        win.focus();
-    }
-
-    addAppointment = function (checked, isUpdate, jsHandle, event, changeAll) {
+    addAppointment = function (isUpdate, jsHandle, event, changeAll) {
         var roomId = window.Id;
         isUpdate = IsUpdate;
         var userId = (event == undefined) ? $('#content').attr('data-userId') : event.userId;
@@ -92,58 +84,62 @@ $(function () {
         var js = (jsHandle == undefined) ? false : true;
 
         //if the selected DOM object is none, send false, otherwise true
-        var isMultiple = ($('#repitition option:selected').text() === "None" ? false : true);//(event == undefined) ? ($('#repitition option:selected').text() === "none" ? false : true) : event.isMult;
+        var isMultiple = ($('#repetition option:selected').text() === "None" ? false : true);
 
         //if the event is undefined, check the DOM for the value, otherwise use the event value the event value will always be defined for rep items
-        var repId = (event == undefined) ? ((isMultiple === false) ? null : String(moment().format("MM/DD/YYYY hh:mm A") + userId)) : event.repititionId;
+        var repId = (event == undefined) ? ((isMultiple === false) ? null : String(moment().format("MM/DD/YYYY hh:mm A") + userId)) : event.repetitionId;
 
         //if the event is undefined, check the DOM for the value, otherwise use the event value the event value will always be defined for rep items
-        var JSendRepDate = (event == undefined) ? ((isMultiple === false) ? $('#datetime').val() : $('#repitition_date').val()) : moment(event.endRepDate).format("MM/DD/YYYY hh:mm A");
+        var JSendRepDate = (event == undefined) ? ((isMultiple === false) ? $('#datetime').val() : $('#repetition_date').val()) : moment(event.endRepDate).format("MM/DD/YYYY hh:mm A");
 
         //if the event is undefined, check the event value
-        var repType = (event == undefined) ? $('#repitition option:selected').text() : event.repititionType;
+        var repType = (event == undefined) ? $('#repetition option:selected').text() : event.repetitionType;
 
         //if changeAll = undefined, assume false
         if (changeAll === undefined) {
             changeAll = false;
         }
-
-
-        //console.log("This is is Multiple " + isMultiple);
-        // console.log("RepId " + repId);
-        adobeConnect.server.addAppointment(checked, isUpdate, roomId, userId, class_name, room_size, url, path, datetime, end, js, isMultiple, repId, JSendRepDate, repType, changeAll)
+        console.log('Add appointment called!');
+        adobeConnect.server.addAppointment(/*checked,*/ isUpdate, roomId, userId, class_name, room_size, url, path, datetime, end, js, isMultiple, repId, JSendRepDate, repType, changeAll)
             .done(function (e) {
+                console.log('addAppointment returned from server');
                 return e;
             });
-
-        /* !!ORIGIONAL CODE!! -- DO NOT DELETE
-         * adobeConnect.server.addAppointment(checked, isUpdate, roomId, userId, class_name, room_size, url, path, datetime, end, js)
-         *   .done(function (e) {
-         *       return e;
-         *   });
-         * !!END ORIGIONAL CODE!!
-        */
-
-        if (checked) {
-            $('#addAppointment').dialog('close');
-        }
+        //if (checked) {
+        //  $('#addAppointment').dialog('close');
+        //}
     }
 
+    adobeConnect.client.UpdateEvent = function (event) {
+        console.log('Update callendar called');
+        console.log('Update callendar called with arguments ' + event);
+        $('#calendar').fullCalendar('removeEvents', event.id);
+        $('#calendar').fullCalendar('renderEvent', event, true);
+    }
+    /*
     adobeConnect.client.addSelf = function (add, event, max, jsHandle) {
+        console.log('addSelf called');
+        console.log("Add: " + add);
+        console.log("Event: " + event);
+        console.log("Max: " + max);
+        console.log("jsHandle: " + jsHandle);
+        console.log('end of parameter');
         //less or equal
         var html2 = null;
         $('#createAppointment').attr("disabled", false).css('opacity', 1);
         if (max <= 0) { max = 0; }
-        var html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> " + max + "</b> occupants <u>including the host</u> are available." + "</div>";
-        html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Beware of meetings after you </div>";
+        //var html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> " + window.max + "</b> occupants <u>including the host</u> are available." + "</div>";
+        //html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Beware of meetings after you </div>";
         // $("#AppointMent_Submit").prop("disabled", true);
         // ("addAppointment ").dialog.
+        console.log(event.roomSize + ' hello');
         if (event.roomSize > max) {
+            console.log('roomsize maior');
             $('#create').attr("disabled", true).css('opacity', 0.5);
             $('#createAppointment').attr("disabled", true).css('opacity', 0.5);
             alert("Error, that number is too large");
             if (jsHandle) {
-                var msg = "Event: " + event.title + " update failed. A maximum of " + max + " participants are avaliable for this time period!";
+                var msg = "Event: " + event.title + " update failed. A maximum of " + window.max + " participants are avaliable for this time period!";
                 notifier(false, "Updating", msg, rt, null, 'error');
             }
             //alert-warning
@@ -151,27 +147,29 @@ $(function () {
             // html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Seats are filled or you are over the alloted maximum of <b>" + max + "</b>.  You might be overlaping with another class</div>";
             // html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> There's a meeting right after you please log off in time </div>";
         }
-        $('#error').html(html);
-        $('#meetingCrashError').html(html2);
-        if (add) {
-            notifier(false, "Creating", "Event: " + event.title + " successfully created", null, null, 'success');
-            $('#calendar').fullCalendar('renderEvent', event, true);
-
-        }
-        // check if there's other events that overlap one another
-        //check for 0 execption
-        if (event.roomSize < max) {
+        else {
+            console.log('roomsize menor');
             $('#create').attr("disabled", false);
             $('#createAppointment').attr("disabled", false); //.css('opacity', 0.5); ungray items
             if (jsHandle) {
                 IsUpdate = true;
-                addAppointment(true, IsUpdate, false, event);
+                addAppointment(IsUpdate, false, event);
             }
-            //alert("Error, that number is too large number 2 test test");
+            alert("Error, that number is too large number 2 test test");
         }
+        //$('#error').html(html);
+        //$('#meetingCrashError').html(html2);
+        if (add) {
+            notifier(false, "Creating", "Event: " + event.title + " successfully created", null, null, 'success');
+            
+
+        }
+        // check if there's other events that overlap one another
+        //check for 0 execption
+
 
     }
-
+    */
     getDuration = function (start, end) {
         start = new Date(start);
         end = new Date(end);
@@ -190,7 +188,7 @@ $(function () {
         }
         IsUpdate = update;
         //if the selected DOM object is none, send false, otherwise true
-        var isMultiple = ($('#repitition option:selected').text() === "None" ? false : true);
+        var isMultiple = ($('#repetition option:selected').text() === "None" ? false : true);
 
         //function used to figure out if we are a rep event
         var repeatedEvent = numOfRepEvents();
@@ -202,12 +200,11 @@ $(function () {
                 //if this event is being updated
                 if (currUpdate)
                     notifier(false, "Updating", "Updating single instance", null, null, 'success');
-                //if not, set the type to no repitition, and continue
+                //if not, set the type to no repetition, and continue
                 else {
                     notifier(false, "Creating", "Creating single instance, date range provided forcing single instance creation", null, null, 'success');
-                    //$('#repitition option:selected').attr("selected", null);
-                    $('#repitition').val("None");
-                    //$('#repitition option:selected').se = "None";
+                    $('#repetition').val("None");
+
                 }
             }
             else {
@@ -219,23 +216,24 @@ $(function () {
 
             var start = moment($('#datetime').val(), 'MM/DD/YYYY hh:mm:ss a');
 
-            //add the events in repitition
+            //add the events in repetition
             for (var i = 0; i < repeatedEvent.numEvents; i++) {
                 //add the event
-                addAppointment(true);
+                addAppointment();
                 //increment the date
                 $('#datetime').val(moment(start.add(repeatedEvent.repType, 'weeks')).format("MM/DD/YYYY hh:mm A "));
             }
             //if this event is being updated
             if (currUpdate)
                 notifier(false, "Finished", "Update complete", null, null, 'success');
-            //if not, set the type to no repitition, and continue
+            //if not, set the type to no repetition, and continue
             else
                 notifier(false, "Finished", "Creation is complete", null, null, 'success');
         }
         else {
             //IsUpdate = true;
-            addAppointment(true, update);
+            console.log('Add appointment ' + update);
+            addAppointment(update);
             //alert("Appointment sucessfuly created.");
         }
     }
@@ -251,13 +249,13 @@ $(function () {
      */
     numOfRepEvents = function () {
         //the variable that holds the end moment
-        var endMoment = moment($("#repitition_date").val(), 'MM/DD/YYYY hh:mm:ss a');
+        var endMoment = moment($("#repetition_date").val(), 'MM/DD/YYYY hh:mm:ss a');
         //variables which will be returned
         var numEvents = 0;
         var repType = 0;
         var isMult = false;
-        //if the selected repitition is set to something and the end moment is atleast a week away
-        if ($("#repitition option:selected").text() != "None" && endMoment != null) {
+        //if the selected repetition is set to something and the end moment is atleast a week away
+        if ($("#repetition option:selected").text() != "None" && endMoment != null) {
             if (endMoment.add(1, 'weeks') > moment($('#datetime').val(), 'MM/DD/YYYY hh:mm:ss a')) {
                 //the temporary moment adn its clone
                 var tempMoment = moment($('#datetime').val(), 'MM/DD/YYYY hh:mm:ss a');
@@ -272,15 +270,15 @@ $(function () {
                 }
 
                 //check for the number of events to be created
-                if ($("#repitition option:selected").text() === "Weekly") {
+                if ($("#repetition option:selected").text() === "Weekly") {
                     numEvents = Math.ceil(numberOfEvents);
                     repType = 1;
                 }
-                else if ($("#repitition option:selected").text() === "Biweekly") {
+                else if ($("#repetition option:selected").text() === "Biweekly") {
                     numEvents = Math.ceil(numberOfEvents / 2);
                     repType = 2;
                 }
-                else if ($("#repitition option:selected").text() === "Monthly") {
+                else if ($("#repetition option:selected").text() === "Monthly") {
                     numEvents = Math.ceil(numberOfEvents / 4);
                     repType = 4;
                 }
@@ -304,7 +302,7 @@ $(function () {
         //otherwise, return the object
         else {
             //if the option is "None"
-            if ($("#repitition option:selected").text() == "None") {
+            if ($("#repetition option:selected").text() == "None") {
                 return {
                     isMult: isMult,
                     numEvents: numEvents,
@@ -323,22 +321,6 @@ $(function () {
         }
 
     };
-
-    /*
-     * Purpose : generates a random alpha numeric string of length x
-     * 
-     * Parameters : x : the length of the generated string 
-     *
-     * Returns : string s : the randomly generated string
-    */
-    randomString = function (x) {
-        var s = "";
-        while (s.length < x && x > 0) {
-            var r = Math.random();
-            s += (r < 0.1 ? Math.floor(r * 100) : String.fromCharCode(Math.floor(r * 26) + (r > 0.5 ? 97 : 65)));
-        }
-        return s;
-    }
 
     confirmation = function (question) {
         var defer = $.Deferred();
@@ -362,33 +344,36 @@ $(function () {
         return defer.promise();
     }
 
+    /*
     adobeConnect.client.callUpdate = function (event) {
-        addAppointment(true, true, true, event);
+        addAppointment(true, true, event);
     }
-
-    adobeConnect.client.date = function (date) {
-    }
-
+ */
+    /*
     adobeConnect.client.updateSelf = function (event) {
         notifier(false, "Updating", "Event #" + event.id + ": " + event.title + " successfully updated", null, null, 'success');
-        $('#calendar').fullCalendar('removeEvents', event.id);
+        $('#calendar').fullCalendar('removeEvent', event.id);
         $('#calendar').fullCalendar('renderEvent', event, true);
     }
-
-    adobeConnect.client.removeSelf = function (id) {
+    */
+    adobeConnect.client.RemoveEvent = function (id) {
         $('#calendar').fullCalendar('removeEvents', id)
     }
 
-
+    /*
     adobeConnect.client.addEvent = function (event, checked, isUpdate, jsHandle) {
-        adobeConnect.server.addSelf(event, $('#content').attr('data-userId'), checked, isUpdate, window.max, jsHandle, moment().format("MM/DD/YYYY hh:mm A"))
+        console.log('add event called');
+        console.log(this.caller);
+        console.log("event: " + event);
+        //adobeConnect.server.addSelf(event, $('#content').attr('data-userId'), checked, isUpdate, window.max, jsHandle, moment().format("MM/DD/YYYY hh:mm A"))
     }
+    */
 
     notifier = function (pd, title, message, cb, data, type) {
         if (pd) {
             var cur_value = 1,
                 progress;
-            var loader =new PNotify({
+            var loader = new PNotify({
                 title: title,
                 text: "<div class=\"progress_bar\" />",
                 icon: 'picon picon-throbber',
@@ -433,9 +418,9 @@ $(function () {
     }
 
     Calendar = function (events) {
+        console.log(events);
         //remove loading text, init adobecal
         $('#calendarLoad').remove();
-        console.log('hello');
         $('#calendar').fullCalendar({
             header: {
                 left: 'prev,next today month',
@@ -451,13 +436,6 @@ $(function () {
                 }
 
             },
-
-            //titleFormat: {
-            //month: '\'<span class="year">\'yyyy\'</span><span class="month">\'MMMM\'</span>\'',
-            //day: '\'<span class="day">\'dddd\'</span>\' MM/DD/yyyy'
-            //  month: 'yyyy MMMM',
-            //  day: 'dddd MM'
-            //},            
             timezone: 'local',
             monthNames: [
                 'JANUARY',
@@ -509,16 +487,12 @@ $(function () {
                 var height = $(element).height();
             },
             loading: function (isLoading) {
-                if (isLoading) {
-                    //$('#busy1').activity();
-                }
-                else {
+                if (!isLoading) {
                     $('#busy1');
                 }
             },
             eventRender: function (event, element, view) {
                 var roomHtml;
-                console.log(view.name);
                 if (view.name == 'month') {
                     roomHtml = "</br><b>Occupants</b>: " + "<u>" + event.roomSize + "</u>";
                     element.find(".fc-content")
@@ -543,8 +517,6 @@ $(function () {
             viewRender: function (view) {
                 let title = view.title;
                 title = title.split(" ");
-                console.log(view.title);
-                console.log(view.titleFormat);
                 let htmlText = '';
                 if (view.name === 'month') {
                     htmltext = "<span class='year'>{0}</span><span class='month'>{1}</span>".formatUnicorn(title[0], title[1]);
@@ -557,7 +529,7 @@ $(function () {
             events: function (start, end, timezone, cb) {
                 cb(events);
             },
-            dayClick: function (date, /*allDay,*/ jsEvent, view) {
+            dayClick: function (date, jsEvent, view) {
                 if (view.name == 'month') {
                     $('#calendar').fullCalendar('changeView', 'agendaDay');
                     $('#calendar').fullCalendar('gotoDate', date);
@@ -565,9 +537,10 @@ $(function () {
                 }
 
                 if (view.name == 'agendaDay') {
+                    console.log("hi there1");
                     $('#datetime').val(moment(date).format("MM/DD/YYYY hh:mm A "));
                     IsUpdate = false;
-                    if (moment().subtract(30, 'minutes') > moment(date)) {                        
+                    if (moment().subtract(30, 'minutes') > moment(date)) {
                         alert("Events cannot be created in the past."); return;
                     }
                     $('#addAppointment').dialog({   //
@@ -590,15 +563,8 @@ $(function () {
                                             }
                                             if (checkFollowing.isSame(eventtimestart)) {
                                                 alert("Warning! There's a meeting right after you.");
-
-                                                //TODO add rendering component to the creation.
-                                                // var html2 = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong> There's a meeting right after you please log off in time </div>";
-                                                //$('#meetingCrashError').html(html2);
                                             }
                                         });
-                                        //Gets index from data object
-                                        // var eventtime = events[82].end;
-                                        //  var checkPrevious = moment($('#datetime').val()).subtract(1,"minutes");                                                                                             
                                         updateOrCreate(false);
                                     }
                                 },
@@ -609,24 +575,30 @@ $(function () {
 
                             ]
                     });
-                    $('#addAppointment').dialog('open');
-
+                    adobeConnect.server.checkAvailableLicenses(moment(date).format("MM/DD/YYYY hh:mm A "), moment(date).add($('#duration').val(), 'minutes').format("MM/DD/YYYY hh:mm A "), null)
+                        .done(function (e) {
+                            window.Id = null;
+                            window.max = e;
+                            $('#occupants').val(e);
+                            updateUI(e);
+                            $('#addAppointment').dialog('open');
+                            console.log('add appointment dialog called event id parameter isnull');
+                        });
                 }
             },
             eventClick: function (event, element) {
                 if (element.target.tagName == 'I') {
+                    console.log("tagName ==I");
                     window.max = event.roomSize;
                     window.Id = event.id;
                     IsUpdate = true;
+                    console.log("event id" + event.id);
                     var cal_hash = element.target.parentElement.hash;
                     $('#class option:selected').text(event.title);
                     $('#datetime').val(moment(event.start).format("MM/DD/YYYY hh:mm A "));
-                    $('#repitition_date').val(moment(event.start).format("MM/DD/YYYY hh:mm A "));
-                    $('#occupants').val(event.roomSize);
-                    //$('#duration option:selected').text(getDuration(event.start, event.end));
+                    $('#repetition_date').val(moment(event.start).format("MM/DD/YYYY hh:mm A "));
                     $('#duration').val(getDuration(event.start, event.end));
-                    //var html = "<input type='submit' onclick='delete_confirm()' class='btn btn-danger' style='float:left' value='Delete Appointment' /><input disabled type='submit' onclick='Update()' id='AppointMent_Submit' class='btn btn-success' value='Update Appointment' />";
-                    // $('.modal-footer').html(html);
+                    $(".chosen-select").trigger("chosen:updated");
                     $('#addAppointment').dialog({
                         title: "Update/Delete Appointment",
                         buttons: {
@@ -647,22 +619,26 @@ $(function () {
                             }
                         }
                     });
-
-                    $('#addAppointment').dialog('open');
-
+                    adobeConnect.server.checkAvailableLicenses(moment(event.start).format("MM/DD/YYYY hh:mm A "), moment(event.end).format("MM/DD/YYYY hh:mm A "), event.id)
+                        .done(function (e) {
+                            window.max = e;
+                            $('#occupants').val(event.roomSize);
+                            updateUI(e);
+                            $('#addAppointment').dialog('open');
+                            console.log('check available licenses was called with event.id parameter')
+                        });
                     delete_confirm = function () {
                         var id = event.id,
                             title = event.title,
                             isRep = event.isRep;
                         confirmation('Are you sure you want to permanantly delete this appoinment?').then(function (answer) {
                             if (answer == "false") {
-                                notifier(false, "Calceled", "Transaction Canceled", null, null, 'success');
+                                notifier(false, "Canceled", "Transaction Canceled", null, null, 'success');
                             }
                             else if (answer == "true") {
                                 if (isRep === false) {
                                     adobeConnect.server.delete(id, false);
                                     notifier(false, "Deleting", "Event #" + id + ": " + title + " has been deleted", null, null, 'success');
-                                    //$('#addAppointment').dialog('close');
                                 }
                                 else {
                                     confirmation('The selected event is a repeating event, would you like to remove them all?').then(function (answer) {
@@ -675,9 +651,7 @@ $(function () {
                                             adobeConnect.server.delete(id, true);
                                             notifier(false, "Deleting", "Event #" + id + ": " + title + " and all other events in the series has been deleted", null, null, 'success');
                                         }
-                                        //$('#addAppointment').dialog('close');
                                     });
-                                    //$('#addAppointment').dialog('close');
                                 }
                                 $('#addAppointment').dialog('close');
                             }
@@ -686,26 +660,30 @@ $(function () {
                     }
 
                     Update = function () {
-                        //if the current repitition is not "None"
+                        //if the current repetition is not "None"
                         var id = event.id,
                             title = event.title;
                         //if an event is none and the ui is none
-                        if (!($('#repitition option:selected').text() === "None" && event.repititionType === "None")) {
+                        console.log($('#repetition option:selected').text());
+                        console.log(event.repetitionType);
+                        console.log('Event ++');
+                        console.log(event);
+                        if (!($('#repetition option:selected').text() === "None" && event.repetitionType === "None")) {
                             //if we are changing a non repeating to a repeating
-                            if (event.repititionType === "None") {
-                                if ($('#repitition option:selected').text() != event.repititionType) {
+                            if (event.repetitionType === "None") {
+                                if ($('#repetition option:selected').text() != event.repetitionType) {
                                     //set isUpdate to false
                                     IsUpdate = false;
                                     //delete the origional
                                     adobeConnect.server.delete(id, false);
-                                    //recreate it with it's repitition
+                                    //recreate it with it's repetition
                                     updateOrCreate(true);
                                 }
                                 else {
                                     //set is update to true
                                     IsUpdate = true;
                                     //modify this one event
-                                    addAppointment(true, true);
+                                    addAppointment(true);
                                 }
                                 notifier(false, "Updated", "Event #" + id + ": " + title + " has been updated", null, null, 'success');
                             }
@@ -713,7 +691,7 @@ $(function () {
                             else {
                                 confirmation('The selected event is a repeating event, would you like to modify the entire series?').then(function (answer) {
                                     if (answer == "false") {
-                                        if ($('#repitition option:selected').text() != event.repititionType) {
+                                        if ($('#repetition option:selected').text() != event.repetitionType) {
                                             //set isUpdate to false
                                             IsUpdate = false;
                                             //delete only one instance of this
@@ -725,13 +703,13 @@ $(function () {
                                             //set is update to true
                                             IsUpdate = true;
                                             //modify this one event
-                                            addAppointment(true, true);
+                                            addAppointment(true);
                                         }
 
                                         notifier(false, "Updated", "Event #" + id + ": " + title + " has been updated", null, null, 'success');
                                     }
                                     else if (answer == "true") {
-                                        if ($('#repitition option:selected').text() != event.repititionType) {
+                                        if ($('#repetition option:selected').text() != event.repetitionType) {
                                             //set isUpdate to false
                                             IsUpdate = false;
                                             //delete the entire series
@@ -743,7 +721,7 @@ $(function () {
                                             //set is update to true
                                             IsUpdate = true;
                                             //modify all events in the series
-                                            addAppointment(true, true, undefined, undefined, true);
+                                            addAppointment(true, undefined, undefined, true);
                                         }
                                         notifier(false, "Updated", "Event #" + id + ": " + title + " and all other events in the series has been updated", null, null, 'success');
                                     }
@@ -753,26 +731,36 @@ $(function () {
                         }
                         else {
                             IsUpdate = true;
-                            addAppointment(true, true);
+                            addAppointment(true);
                         }
+                        $('#addAppointment').dialog('close');
                     }
-
-
                 }
                 else {
+                    /*
+                    console.log("called here :)");
+                    console.log(event.start);
+                    console.log(event.end);
+                    adobeConnect.server.checkMaximumAvailableLicenses(event.start, event.end)
+                        .done(function (e) {
+                            console.log("remote done result is ")
+                            window.max = e;
+                            $('#addAppointment').dialog('open');
+                        });
+                        */
                     if (event.url) {
                         adobeConnect.server.login($('#content').attr('data-userId')).done(function (res) {
                             if (res != "") {
                                 $('#request').html("<iframe src='" + res + "'" + " ></iframe>");
                                 setTimeout(function () {
                                     $('#loginform').submit();
+                                    console.log('submit button clicked');
                                 }, 100);
 
                             } else {
                                 html = "<div class='alert alert-error'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Error!</strong> Invalid Credentials </div>";
                                 $('#error').html(html);
                             }
-
                         });
                         window.open(event.adobeUrl, event.title);
                     }
@@ -787,10 +775,10 @@ $(function () {
                 }
                 window.Id = event.id;
                 IsUpdate = true;
-                addAppointment(false, true, true, event);
+                addAppointment(true, true, event);
+                console.log('addAppointment');
                 notifier(false, "Updating", "Event: " + event.title, null, null, 'info');
                 rt = revertFunc;
-
             },
             eventDragStart: function (event, jsEvent, ui, view) {
             },
@@ -809,19 +797,18 @@ $(function () {
                     revertFunc();
                     return false;
                 }
-                addAppointment(false, true, true, event);
+                addAppointment(true, true, event);
+                console.log('addAppointment');
                 notifier(false, "Updating", "Event: " + event.title, null, null, 'info');
                 rt = revertFunc;
-
             }
-
         });
-
-
     }
     $.connection.hub.start().done(function () {
+        console.log("Hub start is done");
         adobeConnect.server.getAllAppointments(moment().format("MM/DD/YYYY hh:mm A")).done(Calendar);
         adobeConnect.server.getAllRooms().done(function (result) {
+            console.log(moment().format('HH:mm:ss'));
             if (result.length != null) {
                 $('#class').find('option').remove().append('<option selected="selected" disabled="disabled" data-path="" data-url="">Select Your Room:</option>');
                 for (var i = 0; i < result.length; i++) {
@@ -833,25 +820,72 @@ $(function () {
         });
     });
 
-
-
-
     $('.numbersOnly').keyup(function () {
         this.value = this.value.replace(/[^0-9\.]/g, '');
     });
 
-    $('#occupants').keyup(function (e) {
-        if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
-            addAppointment(false, IsUpdate);
+    updateUI = function (value) {
+        $('#availableLicenses').text(window.max);
+        if (value > window.max || value == 0) {
+            console.log('value is greater than window.max ' + value + ', ' + window.max);
+            $('#createAppointment').attr("disabled", true).css('opacity', 0.5);
+            $('#create').attr("disabled", true).css('opacity', 0.5);
+        } else {
+            console.log('value is less than window.max ' + value + ', ' + window.max);
+            $('#createAppointment').attr("disabled", false).css('opacity', 1);
+            $('#create').attr("disabled", false).css('opacity', 1);
         }
+    }
+
+    $('#occupants').keyup(function () {
+        updateUI(this.value);
     });
+
+    inputDataChanged = function () {
+        let start = moment($("#datetime").val(), 'MM/DD/YYYY hh:mm A').format("MM/DD/YYYY hh:mm A");
+        let end = moment($("#datetime").val(), 'MM/DD/YYYY hh:mm A').add($("#duration").val(), 'minutes').format("MM/DD/YYYY hh:mm A");        
+        if ($("#repetition").val() === 'None') {
+            checkAvailableLicenses(start, end, window.id, function (e) {
+                console.log('Return from callback ' + e);
+                window.max = e;
+                updateUI($('#occupants').val());
+            });            
+        }
+        else
+        {
+            console.log('else case inputDataChanged');            
+            let endRepetition = moment($("#repetition_date").val(), 'MM/DD/YYYY hh:mm A');
+            console.log('after endRepetition' + endRepetition);
+            console.log(start);
+            console.log(end);
+            console.log(endRepetition);
+            checkAvailableLicensesRepeat(start, end, $("#repetition").val(),  endRepetition, window.id, function (e) {
+                console.log('Return from callback ' + e);
+                window.max = e;
+                updateUI($('#occupants').val());
+            });
+            console.log('after checkavailability call');
+        }
+        console.log('Datetime inside #duration change ' + start);
+        console.log('Datatime inside #duration change adding duration ' + end);
+        
+    };
 
     $('#duration').on('change', function () {
-        if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
+        /*if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
             addAppointment(false, IsUpdate);
-        }
-    });
+        }*/
+        inputDataChanged();
 
+        /*
+        adobeConnect.server.checkAvailableLicenses(moment($("#datetime").val(), 'MM/DD/YYYY hh:mm A').format("MM/DD/YYYY hh:mm A"), moment($("#datetime").val(), 'MM/DD/YYYY hh:mm A').add($("#duration").val(), 'minutes').format("MM/DD/YYYY hh:mm A"), window.Id)
+            .done(function (e) {
+                window.max = e;
+                console.log('Available licenses returned ' + e);
+                updateUI($('#occupants').val());
+            });
+            */
+    });
 
     // DateTimePicker Set Up
     $('#datetime').datetimepicker({
@@ -861,22 +895,55 @@ $(function () {
     });
 
     $('#datetime').on('hide', function () {
-        addAppointment(false, IsUpdate);
+        console.log('addAppointment');
+        inputDataChanged();
+    });
+    
+    checkAvailableLicensesRepeat = function (startingDateTime, endingDateTime, repetition, endRepetition, eventId, callback) {
+        adobeConnect.server.checkAvailableLicenses(startingDateTime, endingDateTime, repetition, endRepetition, eventId)
+            .done(function (e) {
+                //window.max = e;
+                //console.log('Available licenses returned ' + e);
+                //updateUI($('#occupants').val());
+                callback(e);
+            });
+    };
+
+    checkAvailableLicenses = function (startingDateTime, endingDateTime, eventId, callback) {
+        adobeConnect.server.checkAvailableLicenses(startingDateTime, endingDateTime, eventId)
+            .done(function (e) {
+                //window.max = e;
+                //console.log('Available licenses returned ' + e);
+                //updateUI($('#occupants').val());
+                callback(e);
+            });
+    };
+
+    $('#repetition_date').on('change', function () {
+        console.log('repetition date change');
+        inputDataChanged();
     });
 
-    $('#repitition_date').datetimepicker({
+    $('#repetition').on('change', function () {
+        console.log('repetition change');
+        inputDataChanged();
+    });
+
+    $('#repetition_date').datetimepicker({
         minDate: 0,
         timeFormat: "hh:mm TT",
         minuteGrid: 10
     });
 
     $('body').on('click', '.ui-datepicker-close', function () {
-        addAppointment(false, IsUpdate);
+        console.log('addAppointment body click');
+        inputDataChanged();
     });
 
     $('#class').on('blur', function (e) {
         if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
-            addAppointment(false, IsUpdate);
+            console.log('addAppointment blur');
+            //addAppointment(false, IsUpdate);
         }
     });
 });

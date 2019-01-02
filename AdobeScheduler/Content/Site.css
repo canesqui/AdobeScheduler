@@ -40,108 +40,6 @@ hr {
     border-top: 1px solid #dddde2;
 }
 
-/*Buttons*/
-.day.active {
-    background-color: #f0f0f2;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fefefe), to(#f0f0f2));
-    background-image: -webkit-linear-gradient(top, #fefefe, #f0f0f2);
-    background-image: -o-linear-gradient(top, #fefefe, #f0f0f2);
-    background-image: linear-gradient(to bottom, #fefefe, #f0f0f2);
-    background-image: -moz-linear-gradient(top, #fefefe, #f0f0f2);
-    filter: progid:dximagetransform.microsoft.gradient(startColorStr='#fefefe', EndColorStr='#f0f0f2');
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#fefefe',EndColorStr='#f0f0f2')";
-}
-
-    .day.active:hover {
-        background-color: #f0f0f2;
-        *background-color: #f0f0f2;
-    }
-
-    .day.active.btn-link {
-        background-color: transparent;
-        background-image: none;
-    }
-
-.fc-state-highlight {
-    background: #bcbcbc; /*Today square on Month calendar & Today view*/
-}
-
-.fc-button.fc-state-active {
-    border-color: #2485f3;
-}
-
-.fc-button-effect {
-    display: none;
-}
-
-.fc-corner-left .fc-button-inner {
-    background-color: #f0f0f2;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fefefe), to(#f0f0f2));
-    background-image: -webkit-linear-gradient(top, #fefefe, #f0f0f2);
-    background-image: -o-linear-gradient(top, #fefefe, #f0f0f2);
-    background-image: linear-gradient(to bottom, #fefefe, #f0f0f2);
-    background-image: -moz-linear-gradient(top, #fefefe, #f0f0f2);
-    filter: progid:dximagetransform.microsoft.gradient(startColorStr='#fefefe', EndColorStr='#f0f0f2');
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#fefefe',EndColorStr='#f0f0f2')";
-    color: #333;
-}
-
-    .fc-corner-left .fc-button-inner:hover {
-        background-color: #f0f0f2;
-        *background-color: #f0f0f2;
-    }
-
-    .fc-corner-left .fc-button-inner.btn-link {
-        background-color: transparent;
-        background-image: none;
-    }
-/*
-.fc-state-default .fc-button-inner {
-    background-color: #f0f0f2;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fefefe), to(#f0f0f2));
-    background-image: -webkit-linear-gradient(top, #fefefe, #f0f0f2);
-    background-image: -o-linear-gradient(top, #fefefe, #f0f0f2);
-    background-image: linear-gradient(to bottom, #fefefe, #f0f0f2);
-    background-image: -moz-linear-gradient(top, #fefefe, #f0f0f2);
-    filter: progid:dximagetransform.microsoft.gradient(startColorStr='#fefefe', EndColorStr='#f0f0f2');
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#fefefe',EndColorStr='#f0f0f2')";
-}
-
-    .fc-state-default .fc-button-inner:hover {
-        background-color: #f0f0f2;
-        *background-color: #f0f0f2;
-    }
-
-    .fc-state-default .fc-button-inner.btn-link {
-        background-color: transparent;
-        background-image: none;
-    }
-    */
-.fc-state-active .fc-button-inner {
-    background-color: #54a0f6;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#84bbf9), to(#54a0f6));
-    background-image: -webkit-linear-gradient(top, #84bbf9, #54a0f6);
-    background-image: -o-linear-gradient(top, #84bbf9, #54a0f6);
-    background-image: linear-gradient(to bottom, #84bbf9, #54a0f6);
-    background-image: -moz-linear-gradient(top, #84bbf9, #54a0f6);
-    filter: progid:dximagetransform.microsoft.gradient(startColorStr='#fefefe', EndColorStr='#f0f0f2');
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#84bbf9',EndColorStr='#54a0f6')";
-    color: #fff;
-    border-color: #2485f3;
-    -webkit-box-shadow: inset 0px 1px 0px #b5d6fb;
-    -moz-box-shadow: inset 0px 1px 0px #b5d6fb;
-    box-shadow: inset 0px 1px 0px #b5d6fb;
-}
-
-    .fc-state-active .fc-button-inner:hover {
-        background-color: #54a0f6;
-        *background-color: #54a0f6;
-    }
-
-    .fc-state-active .fc-button-inner.btn-link {
-        background-color: transparent;
-        background-image: none;
-    }
 
 /*-------Login--------*/
 #logo-login {
@@ -246,8 +144,9 @@ hr {
 
 /*------Month & Year Titles-----*/
 #fctitle {
-    overflow:auto;
+    overflow: auto;
 }
+
 span.month {
     font-family: OpenSansExtrabold;
     font-size: 100px;
@@ -267,7 +166,7 @@ span.day {
 }
 
 span.year {
-    font-size: 100px;    
+    font-size: 100px;
     text-align: right;
     display: block;
     float: left;
@@ -275,17 +174,11 @@ span.year {
 }
 
 span.date {
-    font-size: 100px;    
+    font-size: 100px;
     text-align: right;
     display: block;
     float: left;
     color: #bcbcbc;
-}
-
-
-.fc-header-center {
-    text-align: left !important;
-    position: relative;
 }
 
 .fc-header-title h2 {
@@ -335,7 +228,7 @@ span.date {
     background-color: transparent;
     font-size: xx-large;
     font-family: OpenSansLight;
-    background:none;
+    background: none;
 }
 
 
@@ -352,45 +245,6 @@ span.date {
     padding-top: 60px;
 }
 
-.fc-text-arrow {
-    display: none;
-}
-
-.fc-header-left {
-    width: 150px !important;
-    position: absolute;
-    margin-top: 187px; /*Pushes fingers, today, month down*/
-    margin-left: 103px;
-}
-
-    .fc-header-left .fc-button-next,
-    .fc-header-left .fc-button-prev {
-        width: 62px;
-        height: 35px;
-    }
-
-
-    .fc-header-left span.fc-button-today,
-    .fc-header-left span.fc-button-month {
-        display: block;
-        width: 128px;
-        float: none;
-        text-align: right;
-    }
-
-.fc-button-today, .fc-button-month {
-    height: 40px;
-    display: block;
-    padding-top: 20px !important;
-    line-height: normal !important;
-    font-size: 32px;
-    cursor: pointer;
-}
-
-.fc-header .fc-button {
-    margin-bottom: 0px;
-    padding: 0px;
-}
 /*--End Navigation--*/
 
 /*--Calendar & Items--*/
@@ -416,18 +270,21 @@ span.date {
     background-size: cover;
     background-repeat: no-repeat;
 }
+
 .fc-scroller td.fc-day {
     background: none;
 }
+
 .fc-head-container th.fc-day-header {
     background: #184f2c;
-    color:#FFF;
+    color: #FFF;
 }
 
 .fc-unthemed td.fc-today {
     background: #bcbcbc;
     border-color: white;
 }
+
 .fc-ltr .fc-basic-view .fc-day-top .fc-day-number {
     float: left;
 }
@@ -484,10 +341,6 @@ span.date {
     height: 65px;
     font-variant: small-caps;
     color: #fff;
-}
-
-.fc-agenda-divider {
-    /*Hides redundant Date row in Today Scheduler*/
 }
 
 .fc-event-vert { /*Resizes event box on Today View to extend full width*/
@@ -566,6 +419,7 @@ div.fc-view-agendaDay .fc-event-time, div.fc-view-agendaDay .fc-event-title { /*
 }
 
 #error {
+    color: red;
     padding-top: 20px;
 }
 
@@ -607,7 +461,7 @@ form,
 }
 
 .ui-dialog .ui-dialog-buttonpane button {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 progress {
@@ -617,23 +471,12 @@ progress {
 .fc-header-left span.fc-header-space {
     display: none;
 }
-/*
-.fc-header-left span.fc-state-down,
-.fc-header-left span.fc-state-active,
-.fc-header-left span.fc-state-disabled,
-.fc-header-left span.fc-state-default,
-.fc-header-left span.fc-state-hover {
-    box-shadow: none;
-    border: none;
-    background-color: transparent;
-    background: none;
-}
-    */
+
 .fc-state-disabled,
 .fc-button-month.fc-state-active {
     cursor: default;
 }
-    
+
 .fc-button-today.fc-state-disabled {
     color: #e1a358 !important;
 }
