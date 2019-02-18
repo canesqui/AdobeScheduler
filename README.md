@@ -13,7 +13,7 @@ Credentials - SAU
 ### SDK
 
 - Adobe Connect Web Services API reference - https://helpx.adobe.com/adobe-connect/webservices/topics/action-reference.html
-- - Adobe Connect SDK - scidec - DimitriStroganov
+- Adobe Connect SDK - scidec - DimitriStroganov
 https://github.com/DmitryStroganov/AdobeConnectSDK
 
 - JQuery version 2.0.3
