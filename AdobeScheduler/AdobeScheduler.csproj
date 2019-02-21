@@ -178,6 +178,7 @@
     <Compile Include="Models\AdobeConnectDB.cs" />
     <Compile Include="Models\Appointment.cs" />
     <Compile Include="Models\DatabaseInitializer.cs" />
+    <Compile Include="Models\MeetingInfo.cs" />
     <Compile Include="Models\MeetingItem.cs" />
     <Compile Include="Models\StatusInfo.cs" />
     <Compile Include="Models\User.cs" />
@@ -296,6 +297,16 @@
     <Content Include="Scripts\jquery.validate.unobtrusive-custom-for-bootstrap.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\moment-timezone-utils.js" />
+    <Content Include="Scripts\moment-timezone-with-data-2012-2022.js" />
+    <Content Include="Scripts\moment-timezone-with-data-2012-2022.min.js" />
+    <Content Include="Scripts\moment-timezone-with-data.js" />
+    <Content Include="Scripts\moment-timezone-with-data.min.js" />
+    <Content Include="Scripts\moment-timezone.js" />
+    <Content Include="Scripts\moment-timezone.min.js" />
+    <Content Include="Scripts\moment-with-langs.js" />
+    <Content Include="Scripts\moment-with-langs.min.js" />
+    <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\pnotify.custom.min.js" />
     <Content Include="Scripts\prototype.js" />
@@ -315,7 +326,9 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\Dashboard\Room.cshtml" />
@@ -332,7 +345,7 @@
     <Content Include="Views\Shared\_RoomLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AdobeConnectSDK\AdobeConnectSDK\AdobeConnectSDK.csproj">
+    <ProjectReference Include="..\..\AdobeConnectSDK\Source\AdobeConnectSDK\AdobeConnectSDK.csproj">
       <Project>{037eb3bd-6be6-4bce-b538-9677aee525aa}</Project>
       <Name>AdobeConnectSDK</Name>
     </ProjectReference>

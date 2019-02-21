@@ -1,11 +1,7 @@
 {
   "ExpandedNodes": [
-    "",
-    "\\AdobeScheduler",
-    "\\AdobeScheduler\\App_Data",
-    "\\AdobeScheduler\\Controllers",
-    "\\AdobeScheduler\\Hubs"
+    ""
   ],
-  "SelectedNode": "\\AdobeScheduler\\AdobeScheduler.csproj",
+  "SelectedNode": "\\AdobeScheduler.sln",
   "PreviewInSolutionExplorer": false
 }

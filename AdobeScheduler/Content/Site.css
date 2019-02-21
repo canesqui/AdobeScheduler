@@ -480,3 +480,7 @@ progress {
 .fc-button-today.fc-state-disabled {
     color: #e1a358 !important;
 }
+
+.hide-div {
+    display: none;
+}

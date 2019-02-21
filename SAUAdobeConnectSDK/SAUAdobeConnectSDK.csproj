@@ -48,13 +48,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AdobeConnectSDK\AdobeConnectSDK\AdobeConnectSDK.csproj">
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AdobeConnectSDK\Source\AdobeConnectSDK\AdobeConnectSDK.csproj">
       <Project>{037eb3bd-6be6-4bce-b538-9677aee525aa}</Project>
       <Name>AdobeConnectSDK</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

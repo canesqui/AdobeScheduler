@@ -13,6 +13,7 @@ namespace SignalRChat
             var hubConfiguration = new HubConfiguration();
             hubConfiguration.EnableDetailedErrors = true;
             app.MapSignalR(hubConfiguration);
+            //GlobalHost.HubPipeline.RequireAuthentication();
         }
     }
 }

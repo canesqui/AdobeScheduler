@@ -16,13 +16,21 @@ namespace AdobeScheduler.Security
         {
             this.ID = id;
             this.Name = email;
-            this.Email = email;
-            this.Roles = roles;
+            this.Email = email;            
             this.AdobeConnectSDKsessionId = adobeConnectSDKsessionId;
         }
 
+        public Identity(int id, string email, string roles, string adobeConnectSDKsessionId, List<string> rooms)
+        {
+            this.ID = id;
+            this.Name = email;
+            this.Email = email;
+            this.Roles = roles;
+            this.AdobeConnectSDKsessionId = adobeConnectSDKsessionId;
+            this.Rooms = rooms;
+        }
 
-        
+
         public Identity(string name, string data)
         {
             if (string.IsNullOrWhiteSpace(data))
@@ -50,7 +58,7 @@ namespace AdobeScheduler.Security
 
         public string GetUserData()
         {
-            return string.Format("{0}|{1}|{2}", ID, Roles, AdobeConnectSDKsessionId);
+            return string.Format("{0}|{1}|{2}|{3}", ID, Roles, AdobeConnectSDKsessionId, Rooms);
         }
 
 
@@ -59,5 +67,6 @@ namespace AdobeScheduler.Security
         public int ID { get; private set; }
         public string Roles { get; private set; }
         public string AdobeConnectSDKsessionId { get; set; }
+        public List<string> Rooms { get; set; }
     }
 }

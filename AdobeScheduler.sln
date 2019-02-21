@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdobeScheduler", "AdobeScheduler\AdobeScheduler.csproj", "{EAF9EA9B-757B-4AB2-ACC1-7CBE550364FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdobeConnectSDK", "..\AdobeConnectSDK\AdobeConnectSDK\AdobeConnectSDK.csproj", "{037EB3BD-6BE6-4BCE-B538-9677AEE525AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdobeConnectSDK", "..\AdobeConnectSDK\Source\AdobeConnectSDK\AdobeConnectSDK.csproj", "{037EB3BD-6BE6-4BCE-B538-9677AEE525AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAUAdobeConnectSDK", "SAUAdobeConnectSDK\SAUAdobeConnectSDK.csproj", "{9515AC87-097D-4D1E-80C3-AA81864503DC}"
 EndProject

@@ -17,11 +17,7 @@ namespace AdobeScheduler.Models
         public AdobeConnectDB()
             : base("Name=DefaultConnection")
         {
-        }
-        /*public AdobeConnectDB()
-            : base("Name=local_marr.mdf")
-        {
-        }*/
+        }        
 
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Room> Rooms { get; set; }

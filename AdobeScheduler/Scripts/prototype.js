@@ -13,7 +13,7 @@ var Prototype = {
 
   Browser: (function(){
     var ua = navigator.userAgent;
-    var isOpera = Object.prototype.toString.call(window.opera) == '[object Opera]';
+    var isOpera = Object.prototype.toString.call(window.opera) === '[object Opera]';
     return {
       IE:             !!window.attachEvent && !isOpera,
       Opera:          isOpera,
@@ -136,7 +136,7 @@ var Class = (function() {
     for (var i = 0, length = properties.length; i < length; i++) {
       var property = properties[i], value = source[property];
       if (ancestor && Object.isFunction(value) &&
-          value.argumentNames()[0] == "$super") {
+          value.argumentNames()[0] === "$super") {
         var method = value;
         value = (function(m) {
           return function() { return ancestor[m].apply(this, arguments); };

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -16,7 +17,6 @@ namespace AdobeScheduler.Models
         public DateTime end { get; set; }
         public bool allDay { get; set; }
         public int roomSize { get; set; }
-        public bool isRep { get; set; }        
         /// <summary>
         /// represents the id used for deletion of the series of events
         /// </summary>
@@ -29,12 +29,14 @@ namespace AdobeScheduler.Models
         /// represents the repetition type
         /// </summary>
         public string repetitionType { get; set; }
-
+        
+        [NotMapped]
+        public bool isEditable { get; set; }
 
         public Appointment()
         {
             this.allDay = false;
-        }
+        }        
     }
 
     public class Room

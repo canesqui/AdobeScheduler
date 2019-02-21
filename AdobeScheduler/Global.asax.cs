@@ -16,6 +16,8 @@ using System.Data.Entity;
 using AutoMapper;
 using log4net;
 using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR.Json;
+using Newtonsoft.Json;
 
 namespace AdobeScheduler
 {
@@ -36,6 +38,12 @@ namespace AdobeScheduler
             System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
             Mapper.Initialize(Util.AutoMapperConfiguration.Configure);
             GlobalHost.HubPipeline.AddModule(new Hubs.UnhandledExceptionHandlingModule());
+
+            var settings = JsonUtility.CreateDefaultSerializerSettings();
+            settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+            var serializer = JsonSerializer.Create(settings);
+            GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
+
         }
 
         protected void Application_Error()

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AdobeScheduler.Security;
-using AdobeConnectSDK;
 using AdobeScheduler.Models;
 using Newtonsoft.Json;
 using System.Threading.Tasks;

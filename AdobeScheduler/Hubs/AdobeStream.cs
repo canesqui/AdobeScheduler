@@ -1,5 +1,8 @@
 ﻿using AdobeConnectSDK;
+using AdobeConnectSDK.Model;
 using AdobeScheduler.Models;
+using AdobeScheduler.Util;
+using AutoMapper;
 using log4net;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
@@ -10,12 +13,15 @@ using System.Configuration;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Security;
+using MeetingItem = AdobeScheduler.Models.MeetingItem;
 
 namespace AdobeScheduler.Hubs
-{    
+{
+
     public class CalendarData
     {
         public int id { get; set; }
@@ -41,7 +47,6 @@ namespace AdobeScheduler.Hubs
         {
             this.editable = true;
         }
-
     }
 
     public class UnhandledExceptionHandlingModule : HubPipelineModule
@@ -56,11 +61,19 @@ namespace AdobeScheduler.Hubs
         }
     }
 
-    public enum Repetition { Weekly, Biweekly, Monthly }
+    public enum Repetition { None, Weekly, Biweekly, Monthly }
+
+    public class Series
+    {
+        public DateTime StartingDate { get; set; }
+        public DateTime EndingDate { get; set; }
+    }
 
     [HubName("adobeConnect")]
     public class AdobeStream : Hub
     {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private class LoginInfo
         {
             public static LoginInfo currentUser;
@@ -72,78 +85,10 @@ namespace AdobeScheduler.Hubs
             public string username { get; set; }
             public string password { get; set; }
         }
-        //TODO: Why not send an object?
-        public bool AddAppointment(/*bool isChecked,*/ bool isUpdate, string roomId, string userId, string name, string roomSize, string url, string path, string JsdateTime, string Jsmin, bool jsHandle)
-        {
 
-            DateTime date = DateTime.Parse(JsdateTime);
-            int endtime = int.Parse(Jsmin);
-            DateTime end = date.AddMinutes(endtime);
-
-            if (!isUpdate)
-            {
-                using (AdobeConnectDB _db = new AdobeConnectDB())
-                {
-                    Appointment appointment = new Appointment();
-                    CalendarData callendarData = new CalendarData();
-                    appointment.userId = userId;
-                    appointment.title = name;
-                    appointment.roomSize = int.Parse(roomSize);
-                    appointment.url = path;
-                    appointment.adobeUrl = url;
-                    appointment.start = date;
-                    appointment.end = end;
-                    //if (isChecked)
-                    //{
-                    _db.Appointments.Add(appointment);
-                    _db.SaveChanges();
-
-                    var calendarData = ConstructObject(appointment, appointment.userId);
-                    Clients.All.UpdateEvent(calendarData);
-                    return true;
-                    /*}
-                    else
-                    {
-                        Clients.Caller.addEvent(appointment, isChecked, isUpdate, jsHandle);
-                        return false;
-                    }*/
-                }
-            }
-            else
-            {
-                int Id = int.Parse(roomId);
-                using (AdobeConnectDB _db = new AdobeConnectDB())
-                {
-                    var query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).Single();
-                    query.start = date;
-                    query.roomSize = int.Parse(roomSize);
-                    query.title = name;
-                    query.adobeUrl = url;
-                    query.url = path;
-                    query.start = date;
-                    query.end = end;
-                    //if (isChecked)
-                    //{
-                    _db.SaveChanges();
-                    var calendarData = ConstructObject(query, query.userId);
-                    Clients.All.UpdateEvent(calendarData);
-                    return true;
-                    //}
-                    /*
-                    else
-                    {
-                        Clients.Caller.addEvent(query, isChecked, isUpdate, jsHandle);
-                        return false;
-                    }
-                    */
-                }
-            }
-
-        }
         /// <summary>
-        /// Overloaded function of AddAppointment
-        /// </summary>
-        /// <param name="isChecked"></param>
+        /// AddAppointment
+        /// </summary>        
         /// <param name="isUpdate"></param>
         /// <param name="roomId"></param>
         /// <param name="userId"></param>
@@ -158,140 +103,191 @@ namespace AdobeScheduler.Hubs
         /// <param name="repId"></param>
         /// <param name="JSendRepDate"></param>
         /// <param name="repType"></param>
-        /// <param name="changeAll"></param>
+        /// <param name="serieOperation"></param>
         /// <returns></returns>
-        public bool AddAppointment(bool isUpdate, string roomId, string userId, string name, string roomSize, string url, string path, string JsdateTime, string Jsmin, bool jsHandle, bool isMultiple, string repId, string JSendRepDate, string repType, bool changeAll)
-        {
+        //public bool AddAppointment(bool isUpdate, string roomId, string userId, string name, string roomSize, string url, string path, string JsdateTime, string Jsmin, bool isMultiple, string repId, string JSendRepDate, string repType, bool changeAll)
 
-            DateTime date = DateTime.Parse(JsdateTime);
-            int endtime = int.Parse(Jsmin);
-            DateTime end = date.AddMinutes(endtime);
-            DateTime endRepTime;
-            //if there is no end rep time
-            if (JSendRepDate == "")
+        private Repetition GetRepetitionEnum(string repetitionType)
+        {
+            Repetition repetition;
+
+            bool enumParseResult;
+
+            enumParseResult = Enum.TryParse(repetitionType, out repetition);
+
+            if (!enumParseResult)
             {
-                endRepTime = end;
+                repetition = Repetition.None;
             }
-            else
+            return repetition;
+        }
+
+        public bool SaveOrUpdate(Appointment appointment)
+        {
+            if (appointment.start < DateTime.Now.ToUniversalTime().Subtract(new TimeSpan(0, 30, 0)))
             {
-                endRepTime = DateTime.Parse(JSendRepDate);
+                return false;
             }
+
+            var repetition = GetRepetitionEnum(appointment.repetitionType);
+
             using (AdobeConnectDB _db = new AdobeConnectDB())
             {
-                if (!isUpdate)
+                //Abort if there are not enough licenses
+                if (repetition == Repetition.None && appointment.id != 0)
                 {
-                    Appointment appointment = new Appointment();
-                    CalendarData callendarData = new CalendarData();
-
-                    appointment.userId = userId;
-                    appointment.title = name;
-                    appointment.roomSize = int.Parse(roomSize);
-                    appointment.url = path;
-                    appointment.adobeUrl = url;
-                    appointment.start = date;
-                    appointment.end = end;
-                    appointment.isRep = isMultiple;
-                    appointment.repetitionType = repType;
-
-                    if (isMultiple)
-                    {
-                        appointment.endRepDate = endRepTime;
-                        appointment.repetitionId = repId;
-                    }
-                    else
-                    {
-                        appointment.endRepDate = date;
-                        appointment.repetitionId = null;
-                    }
-                    //if (isChecked)
-                    //{
-                    _db.Appointments.Add(appointment);
-                    _db.SaveChanges();
-                    // Clients.All.addEvent(appointment, isChecked, isUpdate, jsHandle);
-                    var calendarData = ConstructObject(appointment, appointment.userId);
-                    Clients.All.UpdateEvent(calendarData);
-                    return true;
-                    //}
-                    //else
-                    //{
-                    //    Clients.Caller.addEvent(appointment, isChecked, isUpdate, jsHandle);
-                    //    return false;
-                    //}
-
-                }
-                //if it is indeed an update
-                else
-                {
-
-                    int Id = int.Parse(roomId);
-                    List<Appointment> query = new List<Appointment>();
-
-                    //if it is not an update to a series of events
-                    if (!changeAll)
-                    {
-                        query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).ToList();
-                        foreach (Appointment res in query)
-                        {
-                            res.start = date;
-                            res.roomSize = int.Parse(roomSize);
-                            res.title = name;
-                            res.adobeUrl = url;
-                            res.url = path;
-                            res.start = date;
-                            res.end = end;
-                            res.endRepDate = endRepTime;
-                        }
-                    }
-                    //if it is an update to a series of events
-                    else
-                    {
-                        Appointment first = new Appointment();
-                        first = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).Single();
-                        string repetitionId = first.repetitionId;
-                        query = (from appointmnet in _db.Appointments where appointmnet.repetitionType == repetitionId select appointmnet).ToList();
-                        foreach (Appointment res in query)
-                        {
-                            res.start = date;
-                            res.roomSize = int.Parse(roomSize);
-                            res.title = name;
-                            res.adobeUrl = url;
-                            res.url = path;
-                            res.start = date;
-                            res.end = end;
-                            res.endRepDate = endRepTime;
-                        }
-                    }
-
-                    //if (isChecked)
-                    //{
-                    _db.SaveChanges();
-                    foreach (Appointment res in query)
-                    {
-                        var calendarData = ConstructObject(res, res.userId);
-                        Clients.All.UpdateEvent(calendarData);
-                        //Clients.All.addEvent(res, isChecked, true, jsHandle);
-                    }
-                    return true;
-                    /*}
-                    else
-                    {
-                        foreach (Appointment res in query)
-                        {
-                            Clients.All.UpdateCallendar(res);
-                            //Clients.Caller.addEvent(res, isChecked, isUpdate, jsHandle);
-                        }
+                    if (CheckAvailableLicenses(appointment.start, appointment.end, appointment.id) < appointment.roomSize)
                         return false;
-                    }*/
+                }
+                else if (repetition == Repetition.None && appointment.id == 0)
+                {
+                    if (CheckAvailableLicenses(appointment.start, appointment.end) < appointment.roomSize)
+                        return false;
+                }
+                else if (repetition != Repetition.None)
+                {
+                    if (CheckAvailableLicenses(appointment.start, appointment.end, repetition, appointment.endRepDate.Value, appointment.repetitionId) < appointment.roomSize)
+                        return false;
+                }
+                
+                var start = appointment.start;
+                var end = appointment.end;
+                var endRepetition = appointment.endRepDate;
+
+                using (var transaction = _db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        List<Appointment> seriesToDelete = new List<Appointment>();
+                        List<Appointment> insertedItems = new List<Appointment>();
+                        if (appointment.id != 0)
+                        {                           
+                            List<Series> newSeriesDates = new List<Series>();
+
+                            if (repetition == Repetition.None)
+                            {
+                                var session = (from appointments in _db.Appointments where appointments.id == appointment.id select appointments).OrderBy(d => d.start).First<Appointment>();
+                                //Chech if the user has permission
+                                if (!HasPermission(session.title))
+                                {
+                                    return false;
+
+                                }
+                                
+                                session.title = appointment.title;
+                                session.roomSize = appointment.roomSize;
+                                session.adobeUrl = appointment.adobeUrl;
+                                session.url = appointment.url;
+                                session.repetitionType = appointment.repetitionType;
+                                session.endRepDate = appointment.endRepDate;
+                                session.repetitionId = null;
+                                session.endRepDate = appointment.endRepDate;
+                                session.start = appointment.start;
+                                session.end = appointment.end;
+                                session.isEditable = true;
+                                _db.SaveChanges();
+                                transaction.Commit();
+                                NotifyInsertAllClients(session);
+                                return true;
+                            }
+                            else
+                            {
+                                var session = (from appointments in _db.Appointments where appointments.id == appointment.id select appointments).First<Appointment>();
+                                seriesToDelete = (from appointments in _db.Appointments where appointments.repetitionId == session.repetitionId select appointments).OrderBy(d => d.start).ToList();
+
+                                var firstOfSerie = seriesToDelete.OrderBy(a => appointment.start).First();
+                                start = new DateTime(firstOfSerie.start.Year, firstOfSerie.start.Month, firstOfSerie.start.Day, appointment.start.Hour, appointment.start.Minute, appointment.start.Second);
+                                end = new DateTime(firstOfSerie.end.Year, firstOfSerie.end.Month, firstOfSerie.end.Day, appointment.end.Hour, appointment.end.Minute, appointment.end.Second);
+                                endRepetition = firstOfSerie.endRepDate;
+
+                                //Remove the series and insert the new one                                
+                                _db.Appointments.RemoveRange(seriesToDelete);
+
+                                //Handle as an insert
+                                appointment.id = 0;
+                            }
+                        }
+
+                        //Abort operation if the room does not exist or user does not have permission
+                        if (!HasPermission(appointment.title))
+                        {
+                            return false;
+
+                        }
+
+                        if (repetition != Repetition.None)
+                        {
+                            var newSeries = CreateSeries(start, end, repetition, endRepetition.Value);
+                            int i = 0;
+                            var guid = Guid.NewGuid().ToString();
+                            
+
+
+                            foreach (var item in newSeries)
+                            {
+                                appointment.start = newSeries[i].StartingDate;
+                                appointment.end = newSeries[i].EndingDate;
+                                appointment.repetitionId = guid;
+                                i++;
+                                appointment.isEditable = true;
+                                _db.Appointments.Add(appointment);
+                                _db.SaveChanges();
+
+                                insertedItems.Add(AdobeScheduler.Util.Utilities.Clone<Appointment>(appointment));
+                            }
+                            transaction.Commit();
+                            NotifyDeleteAllClients(seriesToDelete);
+                            NotifyInsertAllClients(insertedItems);
+                            return true;
+                        }
+                        else
+                        {
+                            appointment.repetitionId = null;
+                            appointment.isEditable = true;
+                            _db.Appointments.Add(appointment);
+                            _db.SaveChanges();
+                            transaction.Commit();
+                            NotifyInsertAllClients(appointment);
+                            return true;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("Error while inserting or updating a single event or a series of events. This may include delete operations as well.", ex);
+                        transaction.Rollback();
+                        return false;
+                    }
                 }
             }
         }
 
-        /// <summary>
-        /// Function that gets and returns all rooms
-        /// </summary>
-        /// <returns></returns>
-        public List<List<string>> GetAllRooms()
+        private void NotifyDeleteAllClients(List<Appointment> inputList)
         {
+            foreach (var item in inputList)
+            {
+                Clients.All.RemoveEvent(item.id);
+            }
+        }
+
+        private void NotifyInsertAllClients(List<Appointment> inputList)
+        {
+            foreach (var item in inputList)
+            {
+                var calendarData = ConstructObject(item, item.userId);
+                Clients.All.UpdateEvent(calendarData);
+            }
+        }
+
+        private void NotifyInsertAllClients(Appointment input)
+        {
+            var calendarData = ConstructObject(input, input.userId);
+            Clients.All.UpdateEvent(calendarData);
+        }
+
+        public bool HasPermission(string meetingName)
+        {
+            List<List<string>> list = new List<List<string>>();
+
             var cookie = Context.Request.Cookies[".ASPXAUTH"];
 
             FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
@@ -300,50 +296,75 @@ namespace AdobeScheduler.Hubs
 
             AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI(customCommunicationProvider);
 
-            LoginInfo login = LoginInfo.currentUser;
-            bool isAdmin = AdobeConnectSDK.Extensions.PrincipalManagement.IsAdmin(adobeObj, authTicket.UserData.Split('|')[0]);
-            List<List<string>> list = new List<List<string>>();
+            bool isAdmin = AdobeConnectSDK.Extensions.PrincipalManagement.IsAdmin(adobeObj, authTicket.UserData.Split('|')[0]); ;
 
             if (isAdmin)
             {
-                var result = AdobeConnectSDK.Extensions.MeetingManagement.GetSharedList(adobeObj);
-
-                foreach (var item in result.Result)
-                {
-                    list.Add(new List<string>() { item.MeetingName, item.UrlPath });
-                }
-            }
-            return list;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        public string Login(string username, string password = null)
-        {
-            AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
-
-            if (!adobeObj.Login(username, password).Result)
-            {
-                if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-                { return ""; }
-                else
-                {
-                    return "";
-                }
+                return true;                
             }
             else
             {
-                LoginInfo.currentUser = new LoginInfo(username, password);
-                string _targetUrl = string.Format("http://turner.southern.edu/api/xml?action=login&login={0}&password={1}", username, password);
-                return _targetUrl;
+                var rooms = GetUserRooms().Select(a => a.meeting_name);
+
+                if (!rooms.Contains(meetingName))
+                {
+                    return false;
+                }
+                else {
+                    return true;
+                }
             }
         }
+    
 
-        private int maxConcurrentLicenses(List<Appointment> sessions)
+        /// <summary>
+        /// Function that gets and returns all rooms that the current user has access to either as host or administrator.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<MeetingItem> GetUserRooms()
+        {           
+            List<List<string>> list = new List<List<string>>();
+
+            var cookie = Context.Request.Cookies[".ASPXAUTH"];
+
+            FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
+
+            CustomCommunicationProvider customCommunicationProvider = new CustomCommunicationProvider(authTicket.UserData.Split('|')[2], ConfigurationManager.AppSettings["NetDomain"]);
+
+            AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI(customCommunicationProvider);
+
+            bool isAdmin = AdobeConnectSDK.Extensions.PrincipalManagement.IsAdmin(adobeObj, authTicket.UserData.Split('|')[0]); ;
+
+            if (isAdmin)
+            {
+                return Util.Utilities.Adapter<IEnumerable<MeetingItem>, IEnumerable<AdobeConnectSDK.Model.MeetingItem>>(AdobeConnectSDK.Extensions.MeetingManagement.GetSharedList(adobeObj).Result);
+                /*
+                foreach (var item in rooms)
+                {
+                    list.Add(new List<string>() { item.MeetingName, item.UrlPath });
+                }
+                */
+            }
+            else
+            {
+                //var rooms = Utilities.Adapter<Models.MeetingItem[], IEnumerable<AdobeConnectSDK.Model.MeetingItem>>(AdobeConnectSDK.Extensions.MeetingManagement.GetHostMeetings(adobeObj).Result);
+                //return AdobeConnectSDK.Extensions.MeetingManagement.GetHostMeetings(adobeObj).Result;
+                return Util.Utilities.Adapter<IEnumerable<MeetingItem>, IEnumerable<AdobeConnectSDK.Model.MeetingItem>>(AdobeConnectSDK.Extensions.MeetingManagement.GetHostMeetings(adobeObj).Result);
+                /*
+                foreach (var item in rooms)
+                {
+                    list.Add(new List<string>() { item.MeetingName, item.UrlPath });
+                } 
+                */
+            }                       
+        }
+
+        public List<MeetingInfo> GetRooms() {
+            var domain = ConfigurationManager.AppSettings["NetDomain"];
+            return GetUserRooms().Select(a => new MeetingInfo() { meetingName = a.meeting_name, url = a.url_path, adobeUrl = "https://"+domain+a.url_path}).ToList();
+        }        
+
+        private int MaxConcurrentLicenses(List<Appointment> sessions)
         {
             int licensesUsed = 0;
             var sortedSessions = sessions.OrderBy(x => x.start).ToList();
@@ -359,59 +380,79 @@ namespace AdobeScheduler.Hubs
             return concurrentLicense.Max();
         }
 
-        public int checkAvailableLicenses(DateTime startingTime, DateTime endingTime, Repetition repetition, DateTime endRepetition, int? eventId = null)
+        private List<Series> CreateSeries(DateTime startingTime, DateTime endingTime, Repetition repetition, DateTime endRepetition)
         {
-            List<DateTime> startingDate = new List<DateTime>();
-            List<DateTime> endingDate = new List<DateTime>();
+            List<Series> series = new List<Series>();
             DateTime currentStartingTime = startingTime;
             DateTime currentEndingTime = endingTime;
             TimeSpan timeSpan = new TimeSpan();
-            Debug.WriteLine("starting date {0}", startingTime.TimeOfDay);
-            Debug.WriteLine("starting date {0}", endingTime.TimeOfDay);
+            series.Add(new Series() { StartingDate = currentStartingTime, EndingDate = currentEndingTime });
 
-            while (currentEndingTime <= endRepetition)
+            switch (repetition)
             {
-                switch (repetition)
-                {
-                    case Repetition.Weekly:
-                        timeSpan = new TimeSpan(7, 0, 0, 0);
-                        currentStartingTime = currentStartingTime + timeSpan;
-                        currentEndingTime = currentEndingTime + timeSpan;
-                        break;
-                    case Repetition.Biweekly:
-                        timeSpan = new TimeSpan(14, 0, 0, 0);
-                        currentStartingTime = currentStartingTime + timeSpan;
-                        currentEndingTime = currentEndingTime + timeSpan;
-                        break;
-                    case Repetition.Monthly:
-                        currentStartingTime.AddMonths(1);
-                        currentEndingTime.AddMonths(1);
-                        break;
-                    default:
-                        break;
-                }
-                startingDate.Add(currentStartingTime.Date);
-                endingDate.Add(currentEndingTime.Date);                
+                case Repetition.Weekly:
+                    timeSpan = new TimeSpan(7, 0, 0, 0);
+                    break;
+                case Repetition.Biweekly:
+                    timeSpan = new TimeSpan(14, 0, 0, 0);
+                    break;
+                default:
+                    break;
             }
-            
+
+            if (timeSpan.CompareTo(TimeSpan.Zero) > 0)
+            {
+                do
+                {
+                    currentStartingTime = currentStartingTime + timeSpan;
+                    currentEndingTime = currentEndingTime + timeSpan;
+
+                    series.Add(new Series() { StartingDate = currentStartingTime, EndingDate = currentEndingTime });
+
+                } while (currentEndingTime.Add(timeSpan) <= endRepetition);
+            }
+            else
+            {
+                do
+                {
+                    currentStartingTime = currentStartingTime.AddMonths(1);
+                    currentEndingTime = currentEndingTime.AddMonths(1);
+
+                    series.Add(new Series() { StartingDate = currentStartingTime, EndingDate = currentEndingTime });
+
+                } while (currentEndingTime.AddMonths(1) <= endRepetition);
+            }
+            return series;
+        }
+
+        public int CheckAvailableLicenses(DateTime startingTime, DateTime endingTime, Repetition repetition, DateTime endRepetition, string repetitionId = "")
+        {
+            var series = CreateSeries(startingTime, endingTime, repetition, endRepetition);
+            var startingDate = series.Select(x => x.StartingDate.Date);
+            var endingDate = series.Select(x => x.EndingDate.Date);
+
             int licensesScheduled = 0;
+
             using (AdobeConnectDB _db = new AdobeConnectDB())
             {
+                var sessions = _db.Appointments.Where(a => (startingDate.Contains(DbFunctions.TruncateTime(a.start).Value) || endingDate.Contains(DbFunctions.TruncateTime(a.end).Value))
 
-                var sessions = _db.Appointments.Where(a => startingDate.Contains(DbFunctions.TruncateTime(a.start).Value) || endingDate.Contains(DbFunctions.TruncateTime(a.end).Value)                 
-                && ((a.start.TimeOfDay >= startingTime.TimeOfDay && a.start.TimeOfDay <= endingTime.TimeOfDay) || //start between interval time
-                             (a.end.TimeOfDay >= startingTime.TimeOfDay && a.end.TimeOfDay <= endingTime.TimeOfDay) || //end between interval time
-                             (a.start.TimeOfDay <= startingTime.TimeOfDay && a.end.TimeOfDay >= endingTime.TimeOfDay) || //start earlier and finish later
-                             (a.start.TimeOfDay >= startingTime.TimeOfDay && a.end.TimeOfDay <= endingTime.TimeOfDay))).ToList<Appointment>();
-                
-                licensesScheduled = maxConcurrentLicenses(sessions.ToList<Appointment>());
+                && ((DbFunctions.CreateTime(a.start.Hour, a.start.Minute, 0).Value >= DbFunctions.CreateTime(startingTime.Hour, startingTime.Minute, 0) && DbFunctions.CreateTime(a.start.Hour, a.start.Minute, 0) <= DbFunctions.CreateTime(endingTime.Hour, endingTime.Minute, 0))  //start between interval time
+                             || (DbFunctions.CreateTime(a.end.Hour, a.end.Minute, 0).Value >= DbFunctions.CreateTime(startingTime.Hour, startingTime.Minute, 0) && DbFunctions.CreateTime(a.end.Hour, a.end.Minute, 0) <= DbFunctions.CreateTime(endingTime.Hour, endingTime.Minute, 0)) //end between interval time
+                             || (DbFunctions.CreateTime(a.start.Hour, a.start.Minute, 0).Value <= DbFunctions.CreateTime(startingTime.Hour, startingTime.Minute, 0) && DbFunctions.CreateTime(a.end.Hour, a.end.Minute, 0) >= DbFunctions.CreateTime(endingTime.Hour, endingTime.Minute, 0)) //start earlier and finish later
+                             || (DbFunctions.CreateTime(a.start.Hour, a.start.Minute, 0).Value >= DbFunctions.CreateTime(startingTime.Hour, startingTime.Minute, 0) && DbFunctions.CreateTime(a.end.Hour, a.end.Minute, 0) <= DbFunctions.CreateTime(endingTime.Hour, endingTime.Minute, 0)))
+                             && ((a.repetitionId != repetitionId && !string.IsNullOrEmpty(repetitionId)) || string.IsNullOrEmpty(repetitionId))
+                             ).ToList<Appointment>();
+
+                licensesScheduled = MaxConcurrentLicenses(sessions.ToList<Appointment>());
             }
             int.TryParse(ConfigurationManager.AppSettings["AdobeConnectLicensesAvailable"], out int licenses);
             var availableLicense = (licenses - licensesScheduled);
             return availableLicense;
         }
-
-        public int checkAvailableLicenses(DateTime startingTime, DateTime endingTime, int? eventId = null)
+        //When doing a resize of 25 licenses over a slot that has no licenses available, the application will allow.
+        //Strangely enough, it will not allow the resize of a 45 licenses event 
+        public int CheckAvailableLicenses(DateTime startingTime, DateTime endingTime, int? eventId = null)
         {
             int licensesScheduled = 0;
             using (AdobeConnectDB _db = new AdobeConnectDB())
@@ -425,60 +466,16 @@ namespace AdobeScheduler.Hubs
                              (DbFunctions.TruncateTime(a.end) <= DbFunctions.TruncateTime(endingTime)) &&
                              (a.id != eventId || eventId == null)).ToList<Appointment>();
 
-                licensesScheduled = maxConcurrentLicenses(sessions.ToList<Appointment>());
+                licensesScheduled = MaxConcurrentLicenses(sessions.ToList<Appointment>());
             }
             int.TryParse(ConfigurationManager.AppSettings["AdobeConnectLicensesAvailable"], out int licenses);
             var availableLicense = (licenses - licensesScheduled);
             return availableLicense;
         }
 
-        /*
-        public void addSelf(Appointment data, string id, bool isChecked, bool isUpdate, int max, bool jsHandle, string jsDate)
-        {
-            int selfTotal = 0;
-            int remaining;
-            using (AdobeConnectDB _db = new AdobeConnectDB())
-            {
-                var query = (from r in _db.Appointments
-                             where ((data.start >= r.start && data.start <= r.end) || (data.end >= r.start && data.end <= r.end))
-                             select r
-                    );
-
-                foreach (Appointment appoinment in query)
-                {
-                    //Operator seems to go off blanace +=
-                    if (appoinment.id != data.id)
-                    {
-                        selfTotal = +appoinment.roomSize;
-                    }
-                }
-
-                var calendarData = ConstructObject(data, id);
-                remaining = 70 - selfTotal;
-                if (isUpdate)
-                {
-                    if (isChecked)
-                    {
-                        
-                        Clients.All.updateSelf(calendarData);
-                        return;
-                    }
-                }
-                /*
-                if (isChecked)
-                {
-                    Clients.Caller.addSelf(true, calendarData, remaining, jsHandle);
-                    return;
-                }
-                Clients.Caller.addSelf(false, calendarData, remaining, jsHandle);
-                */
-                //return;
-                //}
-                //}
-
-                //This function gets the calendar list async. 
-                //Most inmportant funtion to load appointment objects
-                async public Task<List<CalendarData>> GetAllAppointments(string jsDate)
+        //This function gets the calendar list async. 
+        //Most inmportant funtion to load appointment objects
+        async public Task<List<CalendarData>> GetAllAppointments(string jsDate)
         {
             ///get calendar list data
 
@@ -498,152 +495,127 @@ namespace AdobeScheduler.Hubs
                     System.Diagnostics.Debug.WriteLine(e);
                 }
 
+                var httpContext = Context.Request.GetHttpContext();
+                var cookie = httpContext.Request.Cookies[".ASPXAUTH"];
+
+                FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
+
+                CustomCommunicationProvider customCommunicationProvider = new CustomCommunicationProvider(authTicket.UserData.Split('|')[2], ConfigurationManager.AppSettings["NetDomain"]);
+
+                AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI(customCommunicationProvider);
+
+                var test = AdobeConnectSDK.Extensions.PrincipalManagement.GetPrincipalInfo(adobeObj, authTicket.UserData.Split('|')[0]);
+
+                bool isAdmin = AdobeConnectSDK.Extensions.PrincipalManagement.IsAdmin(adobeObj, authTicket.UserData.Split('|')[0]);
+                IEnumerable<string> rooms;
+
+                if (isAdmin) {
+                    rooms = AdobeConnectSDK.Extensions.MeetingManagement.GetSharedList(adobeObj).Result.Select(a => a.MeetingName);
+                }
+                else {                    
+                    rooms =AdobeConnectSDK.Extensions.MeetingManagement.GetHostMeetings(adobeObj).Result.Select(a => a.MeetingName);                    
+                }
+                
+                foreach (var item in query.Where(a => rooms.Contains(a.title)))
+                {
+                    item.isEditable = true;
+                }
+
                 List<CalendarData> calList = new List<CalendarData>();
                 for (var i = 0; i < query.Count; i++)
                 {
-                    //res
                     Appointment res = query.ElementAt(i);
                     var obj = ConstructObject(res, HttpContext.Current.User.Identity.Name);
                     calList.Add(obj);
                 }
-                //standard for loop is faster
-                /*  foreach (Appointment res in query)
-                  {
-                      var obj = ConstructObject(res, HttpContext.Current.User.Identity.Name,jsDate);
-                      calList.Add(obj);
-                  }*/
                 return await Task.Run(() => calList);
             }
-            // return null;
         }
 
-        public CalendarData ConstructObject(Appointment appointment, string id/*, string jsDate*/)
+        public CalendarData ConstructObject(Appointment appointment, string id)
         {
-            //Clients.Caller.date(jsDate);
-            //DateTime Date = DateTime.Parse(jsDate);
-            CalendarData callendarData = new CalendarData();
-            callendarData.id = appointment.id;
-            callendarData.userId = appointment.userId;
-            callendarData.title = appointment.title;
-            callendarData.url = appointment.url;
-            callendarData.color = "#c4afb9";
-            callendarData.adobeUrl = appointment.adobeUrl;
-            callendarData.roomSize = appointment.roomSize;
-            callendarData.start = appointment.start;
-            callendarData.end = appointment.end;
-            callendarData.editable = true;
-            callendarData.open = true;
-            callendarData.archived = false;
-            callendarData.isRep = appointment.isRep;
-            callendarData.repetitionId = appointment.repetitionId;
-            callendarData.endRepDate = appointment.endRepDate;
-            callendarData.repetitionType = appointment.repetitionType;
-            return callendarData;
+            CalendarData calendarData = new CalendarData();
+            calendarData.id = appointment.id;
+            calendarData.userId = appointment.userId;
+            calendarData.title = appointment.title;
+            calendarData.url = appointment.url;
+            calendarData.color = "#c4afb9";
+            calendarData.adobeUrl = appointment.adobeUrl;
+            calendarData.roomSize = appointment.roomSize;
+            calendarData.start = appointment.start;
+            calendarData.end = appointment.end;
+            calendarData.editable = appointment.isEditable;
+            calendarData.open = true;
+            calendarData.archived = false;
+            calendarData.repetitionId = appointment.repetitionId;
+            calendarData.endRepDate = appointment.endRepDate;
+            calendarData.repetitionType = appointment.repetitionType;
+            return calendarData;
         }
 
-        public bool Delete(string id)
+        public bool Delete(Appointment appointment)
         {
-            int Id = int.Parse(id);
-            using (AdobeConnectDB _db = new AdobeConnectDB())
+            var rooms = GetUserRooms().Select(a => a.meeting_name);
+
+            //Check if logges users is host in the room
+            if (!rooms.Contains(appointment.title))
             {
-
-                //querying the data for the population of the calandar object for deletion 
-                List<Appointment> query = new List<Appointment>();
-                try
-                {
-                    query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).ToList();
-                }
-                catch (Exception e)
-                {
-                    System.Diagnostics.Debug.WriteLine(e);
-                }
-
-                //var query = from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet;
-                foreach (Appointment res in query)
-                {
-                    _db.Appointments.Remove(res);
-                }
-                if (_db.SaveChanges() > 0)
-                {
-                    Clients.All.RemoveEvent(Id);
-                    return true;
-                }
-
+                return false;
             }
-            return false;
-        }
 
-        /// <summary>
-        /// An overloaded function of delete, handels multiple events
-        /// </summary>
-        /// <param name="id">The id of the event to be deleted</param>
-        /// <param name="response">True if all events are to be deleted, false if one is to be deleted</param>
-        /// <returns>True if deletion was sucessful, false if not</returns>
-        public bool Delete(string id, bool response)
-        {
-            int Id = int.Parse(id);
+            var repetition = GetRepetitionEnum(appointment.repetitionType);
+
             using (AdobeConnectDB _db = new AdobeConnectDB())
             {
-
                 //querying the data for the population of the calandar object for deletion 
                 List<Appointment> query = new List<Appointment>();
+
                 //if we do want to delete all instances of the appointment
-                if (response == true)
+                if (repetition != Repetition.None)
                 {
                     //holds the initial appointment from which the repId is found
                     List<Appointment> initial = new List<Appointment>();
+
                     //get the ititial appointment
-                    try
+                    var initialAppointment = (from a in _db.Appointments where a.id == appointment.id select a).FirstOrDefault();
+
+                    //Abort operation user does not have permission
+                    if (!HasPermission(initialAppointment.title))
                     {
-                        initial = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).ToList();
-                    }
-                    catch (Exception e)
-                    {
-                        System.Diagnostics.Debug.WriteLine(e);
+                        return false;
+
                     }
 
                     //get the list of the repeating appointments
-                    try
+                    if (initialAppointment != null)
                     {
-                        string repetitionId = initial[0].repetitionId;
-                        query = (from appointmnet in _db.Appointments where appointmnet.repetitionId == repetitionId select appointmnet).ToList();
-                    }
-                    catch (Exception e)
-                    {
-                        System.Diagnostics.Debug.WriteLine(e);
+                        query = (from a in _db.Appointments where a.repetitionId == initialAppointment.repetitionId select a).ToList();
                     }
                 }
                 else
                 {
+                    query = (from a in _db.Appointments where a.id == appointment.id select a).ToList();
+                }
+
+                using (var transaction = _db.Database.BeginTransaction())
+                {
                     try
                     {
-                        query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).ToList();
+                        _db.Appointments.RemoveRange(query);
+                        _db.SaveChanges();
+                        transaction.Commit();
+                        NotifyDeleteAllClients(query);
+                        return true;
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine(e);
+                        Log.Error("Error while deleting one or a series of events.", ex);
+                        return false;
                     }
                 }
-
-
-                //iterate through the list of appointments and delete them all
-                foreach (Appointment res in query)
-                {
-                    _db.Appointments.Remove(res);
-                }
-                //check and see if appointments were deleted
-                if (_db.SaveChanges() > 0)
-                {
-                    //Clients.All.removeSelf(Id);
-                    foreach (Appointment identify in query)
-                        Clients.All.RemoveEvent(identify.id);
-                    return true;
-                }
-
             }
-            return false;
         }
-
+        /*
         public CalendarData GetEvent(string id, string jsDate)
         {
             int Id = int.Parse(id);
@@ -653,12 +625,46 @@ namespace AdobeScheduler.Hubs
                 var query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).FirstOrDefault();
                 return ConstructObject(query, query.userId);
             }
-        }
+        }*/
 
-        public bool CheckHost(string username, string meeting)
+        /*    
+        private IEnumerable<string> GetUserHostRooms()
         {
             var httpContext = Context.Request.GetHttpContext();
+            var cookie = httpContext.Request.Cookies[".ASPXAUTH"];
 
+            FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
+
+            CustomCommunicationProvider customCommunicationProvider = new CustomCommunicationProvider(authTicket.UserData.Split('|')[2], ConfigurationManager.AppSettings["NetDomain"]);
+
+            AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI(customCommunicationProvider);
+
+            return AdobeConnectSDK.Extensions.MeetingManagement.GetMyMeetings(adobeObj).Result.Select(a => a.MeetingName);
+        }
+        */
+
+        /*   
+        private IEnumerable<MeetingItem> GetUserHostRooms()
+        {
+
+            var httpContext = Context.Request.GetHttpContext();
+            var cookie = httpContext.Request.Cookies[".ASPXAUTH"];
+
+            FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
+
+            CustomCommunicationProvider customCommunicationProvider = new CustomCommunicationProvider(authTicket.UserData.Split('|')[2], ConfigurationManager.AppSettings["NetDomain"]);
+
+            AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI(customCommunicationProvider);
+
+            if()
+
+            return Utilities.Adapter<Models.MeetingItem[], IEnumerable<AdobeConnectSDK.Model.MeetingItem>>(AdobeConnectSDK.Extensions.MeetingManagement.GetHostMeetings(adobeObj).Result);
+        }*/
+        /*
+        public bool CheckHost(string username, string meeting)
+        {
+
+            var httpContext = Context.Request.GetHttpContext();
             var cookie = httpContext.Request.Cookies[".ASPXAUTH"];
 
             FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(cookie.Value);
@@ -671,6 +677,8 @@ namespace AdobeScheduler.Hubs
 
             var myMeetings = AdobeConnectSDK.Extensions.MeetingManagement.GetMyMeetings(adobeObj).Result;
 
+            var test = AdobeConnectSDK.Extensions.MeetingManagement.GetAllMeetings(adobeObj);
+
             foreach (var myMeetingItem in myMeetings)
             {
                 meetingList.Add(myMeetingItem.MeetingName);
@@ -678,6 +686,6 @@ namespace AdobeScheduler.Hubs
             var result = meetingList.Contains(meeting);
 
             return result;
-        }
+        }*/
     }
 }

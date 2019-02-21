@@ -3,7 +3,7 @@
     ViewBag.Title = "Dashboard";
 
 }
-<div id="addAppointment">
+<div id="addAppointment" class="hide-div">
     <form id="modal-form" class="form-horizontal" accept-charset="UTF-8" data-remote="true">
         <fieldset>
             <div class="control-group">
@@ -54,12 +54,14 @@
                 <div class="controls">
                     <input id="occupants" type="text" class="numbersOnly" autocomplete="off" />
                 </div>
+                <input type="hidden" id="repetitionId" value="">
+                <input type="hidden" id="eventId" value="">
                 <div id="error">
                     <div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> <span id="availableLicenses"></span></b> occupants <u>including the host</u> are available.</div>
                 </div>
                 <div id="meetingCrashError">
                     <div class='alert alert-info'><strong style='float:left;'> Warning! </strong> Beware of meetings after you </div>
-                </div>                
+                </div>
             </div>
         </fieldset>
     </form>
@@ -68,6 +70,8 @@
 <div id="busy1" class="square"></div>
 <h2 id="fctitle"></h2>
 <div id="calendar"></div>
+
 <script>
-    $(".chosen-select").chosen({ width: "300px" });    
+    $(".chosen-select").chosen({ width: "300px" });
 </script>
+
