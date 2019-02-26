@@ -196,9 +196,9 @@ namespace AdobeScheduler.Hubs
                                 seriesToDelete = (from appointments in _db.Appointments where appointments.repetitionId == session.repetitionId select appointments).OrderBy(d => d.start).ToList();
 
                                 var firstOfSerie = seriesToDelete.OrderBy(a => appointment.start).First();
-                                start = new DateTime(firstOfSerie.start.Year, firstOfSerie.start.Month, firstOfSerie.start.Day, appointment.start.Hour, appointment.start.Minute, appointment.start.Second);
-                                end = new DateTime(firstOfSerie.end.Year, firstOfSerie.end.Month, firstOfSerie.end.Day, appointment.end.Hour, appointment.end.Minute, appointment.end.Second);
-                                endRepetition = firstOfSerie.endRepDate;
+                                start = new DateTime(appointment.start.Year, appointment.start.Month, appointment.start.Day, appointment.start.Hour, appointment.start.Minute, appointment.start.Second);
+                                end = new DateTime(appointment.end.Year, appointment.end.Month, appointment.end.Day, appointment.end.Hour, appointment.end.Minute, appointment.end.Second);
+                                endRepetition = appointment.endRepDate;
 
                                 //Remove the series and insert the new one                                
                                 _db.Appointments.RemoveRange(seriesToDelete);
@@ -489,6 +489,7 @@ namespace AdobeScheduler.Hubs
                 try
                 {
                     query = (from r in _db.Appointments where (r.end >= DateS && r.start >= DateM) select r).ToList();
+
                 }
                 catch (Exception e)
                 {
@@ -589,7 +590,7 @@ namespace AdobeScheduler.Hubs
                     //get the list of the repeating appointments
                     if (initialAppointment != null)
                     {
-                        query = (from a in _db.Appointments where a.repetitionId == initialAppointment.repetitionId select a).ToList();
+                        query = (from a in _db.Appointments where a.repetitionId == initialAppointment.repetitionId && a.repetitionId != null select a).ToList();
                     }
                 }
                 else
