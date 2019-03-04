@@ -149,7 +149,7 @@ namespace AdobeScheduler.Hubs
                     if (CheckAvailableLicenses(appointment.start, appointment.end, repetition, appointment.endRepDate.Value, appointment.repetitionId) < appointment.roomSize)
                         return false;
                 }
-                
+
                 var start = appointment.start;
                 var end = appointment.end;
                 var endRepetition = appointment.endRepDate;
@@ -161,7 +161,7 @@ namespace AdobeScheduler.Hubs
                         List<Appointment> seriesToDelete = new List<Appointment>();
                         List<Appointment> insertedItems = new List<Appointment>();
                         if (appointment.id != 0)
-                        {                           
+                        {
                             List<Series> newSeriesDates = new List<Series>();
 
                             if (repetition == Repetition.None)
@@ -173,7 +173,7 @@ namespace AdobeScheduler.Hubs
                                     return false;
 
                                 }
-                                
+
                                 session.title = appointment.title;
                                 session.roomSize = appointment.roomSize;
                                 session.adobeUrl = appointment.adobeUrl;
@@ -220,8 +220,6 @@ namespace AdobeScheduler.Hubs
                             var newSeries = CreateSeries(start, end, repetition, endRepetition.Value);
                             int i = 0;
                             var guid = Guid.NewGuid().ToString();
-                            
-
 
                             foreach (var item in newSeries)
                             {
@@ -300,7 +298,7 @@ namespace AdobeScheduler.Hubs
 
             if (isAdmin)
             {
-                return true;                
+                return true;
             }
             else
             {
@@ -310,19 +308,20 @@ namespace AdobeScheduler.Hubs
                 {
                     return false;
                 }
-                else {
+                else
+                {
                     return true;
                 }
             }
         }
-    
+
 
         /// <summary>
         /// Function that gets and returns all rooms that the current user has access to either as host or administrator.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<MeetingItem> GetUserRooms()
-        {           
+        {
             List<List<string>> list = new List<List<string>>();
 
             var cookie = Context.Request.Cookies[".ASPXAUTH"];
@@ -356,13 +355,14 @@ namespace AdobeScheduler.Hubs
                     list.Add(new List<string>() { item.MeetingName, item.UrlPath });
                 } 
                 */
-            }                       
+            }
         }
 
-        public List<MeetingInfo> GetRooms() {
+        public List<MeetingInfo> GetRooms()
+        {
             var domain = ConfigurationManager.AppSettings["NetDomain"];
-            return GetUserRooms().Select(a => new MeetingInfo() { meetingName = a.meeting_name, url = a.url_path, adobeUrl = "https://"+domain+a.url_path}).ToList();
-        }        
+            return GetUserRooms().Select(a => new MeetingInfo() { meetingName = a.meeting_name, url = a.url_path, adobeUrl = "https://" + domain + a.url_path }).ToList();
+        }
 
         private int MaxConcurrentLicenses(List<Appointment> sessions)
         {
@@ -388,6 +388,9 @@ namespace AdobeScheduler.Hubs
             TimeSpan timeSpan = new TimeSpan();
             series.Add(new Series() { StartingDate = currentStartingTime, EndingDate = currentEndingTime });
 
+            TimeZoneInfo destinationTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ConfigurationManager.AppSettings.Get("BaseLineTimeZone"));
+            bool initialDSTStatus = destinationTimeZone.IsDaylightSavingTime(currentStartingTime);
+
             switch (repetition)
             {
                 case Repetition.Weekly:
@@ -402,27 +405,104 @@ namespace AdobeScheduler.Hubs
 
             if (timeSpan.CompareTo(TimeSpan.Zero) > 0)
             {
+                DateTime previousStartingTime, previousEndingTime;
+                previousStartingTime = TimeZoneInfo.ConvertTimeFromUtc(currentStartingTime, destinationTimeZone);
+                previousEndingTime = TimeZoneInfo.ConvertTimeFromUtc(currentEndingTime, destinationTimeZone);
+
                 do
                 {
                     currentStartingTime = currentStartingTime + timeSpan;
                     currentEndingTime = currentEndingTime + timeSpan;
 
-                    series.Add(new Series() { StartingDate = currentStartingTime, EndingDate = currentEndingTime });
+                    if (initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentStartingTime) && initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentEndingTime))
+                    {
+                        series.Add(new Series() { StartingDate = currentStartingTime, EndingDate = currentEndingTime });
+                    }
+                    else
+                    {
+                        DateTime adjustedStartingTime = currentStartingTime;
+                        DateTime adjustedEndingTime = currentEndingTime;
 
+                        if (initialDSTStatus != destinationTimeZone.IsDaylightSavingTime(currentStartingTime))
+                        {
+                            adjustedStartingTime = AdjustTime(currentStartingTime, previousStartingTime);
+                        }
+
+                        if (initialDSTStatus != destinationTimeZone.IsDaylightSavingTime(currentEndingTime))
+                        {
+                            adjustedEndingTime = AdjustTime(currentEndingTime, previousEndingTime);
+                        }
+                        series.Add(new Series() { StartingDate = adjustedStartingTime, EndingDate = adjustedEndingTime });
+                    }
                 } while (currentEndingTime.Add(timeSpan) <= endRepetition);
             }
             else
             {
+                DateTime previousStartingTime, previousEndingTime;
+
+                previousStartingTime = TimeZoneInfo.ConvertTimeFromUtc(currentStartingTime, destinationTimeZone); ;
+                previousEndingTime = TimeZoneInfo.ConvertTimeFromUtc(currentEndingTime, destinationTimeZone);
+
                 do
                 {
                     currentStartingTime = currentStartingTime.AddMonths(1);
                     currentEndingTime = currentEndingTime.AddMonths(1);
 
-                    series.Add(new Series() { StartingDate = currentStartingTime, EndingDate = currentEndingTime });
+                    if (initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentStartingTime) && initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentEndingTime))
+                    {
+                        series.Add(new Series() { StartingDate = currentStartingTime, EndingDate = currentEndingTime });
+                    }
+                    else
+                    {
+                        DateTime adjustedStartingTime = currentStartingTime;
+                        DateTime adjustedEndingTime = currentEndingTime;
+
+                        if (initialDSTStatus != destinationTimeZone.IsDaylightSavingTime(currentStartingTime))
+                        {
+                            adjustedStartingTime = AdjustTime(currentStartingTime, previousStartingTime);
+                        }
+
+                        if (initialDSTStatus != destinationTimeZone.IsDaylightSavingTime(currentEndingTime))
+                        {
+                            adjustedEndingTime = AdjustTime(currentEndingTime, previousEndingTime);
+                        }
+
+                        series.Add(new Series() { StartingDate = adjustedStartingTime, EndingDate = adjustedEndingTime });
+                    }
 
                 } while (currentEndingTime.AddMonths(1) <= endRepetition);
             }
             return series;
+        }
+
+        private DateTime AdjustTime(DateTime dateTimeToBeAdjusted, DateTime comparisonTime)
+        {
+            TimeZoneInfo destinationTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ConfigurationManager.AppSettings.Get("BaseLineTimeZone"));
+
+            int convertedHour = TimeZoneInfo.ConvertTimeFromUtc(dateTimeToBeAdjusted, destinationTimeZone).Hour;
+
+            convertedHour = (convertedHour == 0) ? 24 : convertedHour;
+
+            int hourOffSet = convertedHour - comparisonTime.Hour;
+
+            int year = dateTimeToBeAdjusted.Year;
+            int month = dateTimeToBeAdjusted.Month;
+            int day = dateTimeToBeAdjusted.Day;
+            int hour = dateTimeToBeAdjusted.Hour;
+            int minute = dateTimeToBeAdjusted.Minute;
+            int second = dateTimeToBeAdjusted.Second;
+
+            //Day was also affected
+            if (hourOffSet < 0)
+            {
+                day -= 1;
+                hour = 12;
+            }
+            else
+            {
+                hour -= hourOffSet;
+            }
+            return new DateTime(year, month, day, hour, minute, second);
         }
 
         public int CheckAvailableLicenses(DateTime startingTime, DateTime endingTime, Repetition repetition, DateTime endRepetition, string repetitionId = "")
@@ -450,8 +530,7 @@ namespace AdobeScheduler.Hubs
             var availableLicense = (licenses - licensesScheduled);
             return availableLicense;
         }
-        //When doing a resize of 25 licenses over a slot that has no licenses available, the application will allow.
-        //Strangely enough, it will not allow the resize of a 45 licenses event 
+        
         public int CheckAvailableLicenses(DateTime startingTime, DateTime endingTime, int? eventId = null)
         {
             int licensesScheduled = 0;
@@ -510,13 +589,15 @@ namespace AdobeScheduler.Hubs
                 bool isAdmin = AdobeConnectSDK.Extensions.PrincipalManagement.IsAdmin(adobeObj, authTicket.UserData.Split('|')[0]);
                 IEnumerable<string> rooms;
 
-                if (isAdmin) {
+                if (isAdmin)
+                {
                     rooms = AdobeConnectSDK.Extensions.MeetingManagement.GetSharedList(adobeObj).Result.Select(a => a.MeetingName);
                 }
-                else {                    
-                    rooms =AdobeConnectSDK.Extensions.MeetingManagement.GetHostMeetings(adobeObj).Result.Select(a => a.MeetingName);                    
+                else
+                {
+                    rooms = AdobeConnectSDK.Extensions.MeetingManagement.GetHostMeetings(adobeObj).Result.Select(a => a.MeetingName);
                 }
-                
+
                 foreach (var item in query.Where(a => rooms.Contains(a.title)))
                 {
                     item.isEditable = true;
