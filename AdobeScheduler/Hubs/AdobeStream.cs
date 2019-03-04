@@ -387,9 +387,17 @@ namespace AdobeScheduler.Hubs
             DateTime currentEndingTime = endingTime;
             TimeSpan timeSpan = new TimeSpan();
             series.Add(new Series() { StartingDate = currentStartingTime, EndingDate = currentEndingTime });
+            string timeZoneId = ConfigurationManager.AppSettings.Get("BaseLineTimeZone");
+            bool isBaseLineTimeZone = timeZoneId == null ? false : true;
 
-            TimeZoneInfo destinationTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ConfigurationManager.AppSettings.Get("BaseLineTimeZone"));
-            bool initialDSTStatus = destinationTimeZone.IsDaylightSavingTime(currentStartingTime);
+            TimeZoneInfo destinationTimeZone = TimeZoneInfo.Local;
+            bool initialDSTStatus = false;
+
+            if (isBaseLineTimeZone)
+            {
+                destinationTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+                initialDSTStatus = destinationTimeZone.IsDaylightSavingTime(currentStartingTime);
+            }
 
             switch (repetition)
             {
@@ -405,21 +413,31 @@ namespace AdobeScheduler.Hubs
 
             if (timeSpan.CompareTo(TimeSpan.Zero) > 0)
             {
-                DateTime previousStartingTime, previousEndingTime;
-                previousStartingTime = TimeZoneInfo.ConvertTimeFromUtc(currentStartingTime, destinationTimeZone);
-                previousEndingTime = TimeZoneInfo.ConvertTimeFromUtc(currentEndingTime, destinationTimeZone);
+                DateTime previousStartingTime = new DateTime();
+                DateTime previousEndingTime = new DateTime();
+
+                if (isBaseLineTimeZone)
+                {
+                    previousStartingTime = TimeZoneInfo.ConvertTimeFromUtc(currentStartingTime, destinationTimeZone);
+                    previousEndingTime = TimeZoneInfo.ConvertTimeFromUtc(currentEndingTime, destinationTimeZone);
+                }
 
                 do
                 {
                     currentStartingTime = currentStartingTime + timeSpan;
                     currentEndingTime = currentEndingTime + timeSpan;
-
-                    if (initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentStartingTime) && initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentEndingTime))
+                    if (!isBaseLineTimeZone || (initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentStartingTime) && initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentEndingTime)))
                     {
                         series.Add(new Series() { StartingDate = currentStartingTime, EndingDate = currentEndingTime });
                     }
                     else
                     {
+                        //if (initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentStartingTime) && initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentEndingTime))
+                        //{
+                        //    series.Add(new Series() { StartingDate = currentStartingTime, EndingDate = currentEndingTime });
+                        //}
+                        //else
+                        //{
                         DateTime adjustedStartingTime = currentStartingTime;
                         DateTime adjustedEndingTime = currentEndingTime;
 
@@ -433,22 +451,28 @@ namespace AdobeScheduler.Hubs
                             adjustedEndingTime = AdjustTime(currentEndingTime, previousEndingTime);
                         }
                         series.Add(new Series() { StartingDate = adjustedStartingTime, EndingDate = adjustedEndingTime });
+                        //}
                     }
                 } while (currentEndingTime.Add(timeSpan) <= endRepetition);
             }
             else
             {
-                DateTime previousStartingTime, previousEndingTime;
+                DateTime previousStartingTime = new DateTime();
+                DateTime previousEndingTime = new DateTime();
 
-                previousStartingTime = TimeZoneInfo.ConvertTimeFromUtc(currentStartingTime, destinationTimeZone); ;
-                previousEndingTime = TimeZoneInfo.ConvertTimeFromUtc(currentEndingTime, destinationTimeZone);
+                if (isBaseLineTimeZone)
+                {
+                    previousStartingTime = TimeZoneInfo.ConvertTimeFromUtc(currentStartingTime, destinationTimeZone); ;
+                    previousEndingTime = TimeZoneInfo.ConvertTimeFromUtc(currentEndingTime, destinationTimeZone);
+                }
+
 
                 do
                 {
                     currentStartingTime = currentStartingTime.AddMonths(1);
                     currentEndingTime = currentEndingTime.AddMonths(1);
 
-                    if (initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentStartingTime) && initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentEndingTime))
+                    if (!isBaseLineTimeZone || (initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentStartingTime) && initialDSTStatus == destinationTimeZone.IsDaylightSavingTime(currentEndingTime)))
                     {
                         series.Add(new Series() { StartingDate = currentStartingTime, EndingDate = currentEndingTime });
                     }
@@ -479,30 +503,11 @@ namespace AdobeScheduler.Hubs
         {
             TimeZoneInfo destinationTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ConfigurationManager.AppSettings.Get("BaseLineTimeZone"));
 
-            int convertedHour = TimeZoneInfo.ConvertTimeFromUtc(dateTimeToBeAdjusted, destinationTimeZone).Hour;
+            DateTime convertedTime = TimeZoneInfo.ConvertTimeFromUtc(dateTimeToBeAdjusted, destinationTimeZone);
 
-            convertedHour = (convertedHour == 0) ? 24 : convertedHour;
+            int hourOffSet = convertedTime.Hour - comparisonTime.Hour;
 
-            int hourOffSet = convertedHour - comparisonTime.Hour;
-
-            int year = dateTimeToBeAdjusted.Year;
-            int month = dateTimeToBeAdjusted.Month;
-            int day = dateTimeToBeAdjusted.Day;
-            int hour = dateTimeToBeAdjusted.Hour;
-            int minute = dateTimeToBeAdjusted.Minute;
-            int second = dateTimeToBeAdjusted.Second;
-
-            //Day was also affected
-            if (hourOffSet < 0)
-            {
-                day -= 1;
-                hour = 12;
-            }
-            else
-            {
-                hour -= hourOffSet;
-            }
-            return new DateTime(year, month, day, hour, minute, second);
+            return dateTimeToBeAdjusted.Subtract(new TimeSpan(hourOffSet, 0, 0));
         }
 
         public int CheckAvailableLicenses(DateTime startingTime, DateTime endingTime, Repetition repetition, DateTime endRepetition, string repetitionId = "")
@@ -530,7 +535,7 @@ namespace AdobeScheduler.Hubs
             var availableLicense = (licenses - licensesScheduled);
             return availableLicense;
         }
-        
+
         public int CheckAvailableLicenses(DateTime startingTime, DateTime endingTime, int? eventId = null)
         {
             int licensesScheduled = 0;

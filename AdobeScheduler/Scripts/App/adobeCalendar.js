@@ -331,16 +331,15 @@ $(function () {
             events: function (start, end, timezone, cb) {
                 cb(events);
             },
-            dayClick: function (date, jsEvent, view) {
+            dayClick: function (date, jsEvent, view) {                
                 if (view.name === 'month') {
                     $('#calendar').fullCalendar('changeView', 'agendaDay');
                     $('#calendar').fullCalendar('gotoDate', date);
                 }
 
                 if (view.name === 'agendaDay') {
-                    $('#datetime').val(moment(date).format("MM/DD/YYYY hh:mm:ss A "));
-
-                    if (moment().subtract(30, 'minutes').format("MM/DD/YYYY hh:mm:ss A ") > moment(date, "MM/DD/YYYY hh:mm:ss A ")) {
+                    $('#datetime').val(moment(date).format("MM/DD/YYYY hh:mm:ss A "));                    
+                    if (moment(moment().utc().local().subtract(30, 'minutes')).isAfter(moment(date, "MM/DD/YYYY hh:mm:ss A "))) {
                         alert("Events cannot be created in the past.");
                         return;
                     }
