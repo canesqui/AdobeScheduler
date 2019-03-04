@@ -60,7 +60,7 @@
             showSecond: null,
             showMillisec: null,
             showMicrosec: null,
-            showTimezone: null,
+            showTimezone: false,
             showTime: true,
             stepHour: 1,
             stepMinute: 1,
