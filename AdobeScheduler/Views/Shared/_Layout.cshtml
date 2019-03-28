@@ -31,13 +31,16 @@
   <!--<![endif]-->
 
 <!--Header-->
-<div id="header">
-    <div id="Logo"><img src="~/Content/images/Logo.jpg"/></div>
-    <div id="SiteTitle">Adobe Connect Scheduler</div>
-    <div id="LogInfo">@Context.User.Identity.Name
-        <a tabindex="-1" href="logout">Logout</a>
-    </div>
-</div>                               
+      <div id="header">
+          <!--<div id="logoashboard"><img src=System.Web.Configuration.WebConfigurationManager.AppSettings["logo"] /></div>-->          
+
+          <div id="Logo"><img src=@Href("~"+System.Web.Configuration.WebConfigurationManager.AppSettings["SmallLogo"]) /></div>
+          <div id="SiteTitle">Adobe Connect Calendar</div>
+          <div id="LogInfo">              
+              @Model.Session.FullName
+              <a tabindex="-1" href="auth/logout">Logout</a>
+          </div>
+      </div>                               
                          
 <div id='content' data-userId="@Context.User.Identity.Name">
      @RenderBody()

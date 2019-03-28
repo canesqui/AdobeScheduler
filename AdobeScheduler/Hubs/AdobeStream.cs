@@ -702,6 +702,11 @@ namespace AdobeScheduler.Hubs
                 }
             }
         }
+
+        public string GetBackgroundImage()
+        {
+            return ConfigurationManager.AppSettings.Get("BackgroundImage");
+        }
         /*
         public CalendarData GetEvent(string id, string jsDate)
         {

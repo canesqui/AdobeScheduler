@@ -1,0 +1,501 @@
+﻿html,
+body {
+    background: #FFF;
+    font-family: OpenSansLight;
+    padding: 0px;
+}
+
+a:hover {
+    text-decoration: none;
+    color: #bcbcbc;
+}
+
+h1 {
+    color: #41414c !important;
+    margin-top: 0px;
+    color: #eee;
+}
+
+h2 {
+    color: #41414c;
+    font-size: 1.25em;
+    font-weight: normal;
+}
+
+h3 {
+    color: #41414c;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+h2 span.info {
+    margin-top: -1em;
+    font-size: .75em;
+    display: block;
+    font-weight: normal;
+    color: #333;
+}
+
+hr {
+    border-top: 1px solid #dddde2;
+}
+
+
+/*-------Login--------*/
+.container-top {
+    display: flex;
+}
+
+.left {
+    min-width: 50%;
+    text-align: right;
+}
+
+.right{
+    flex-grow: 1;
+    text-align: left;
+}
+
+.container-bottom {
+
+}
+
+
+#logo-login {
+    position: relative;
+    top: 130px;
+    width: 150px;
+    height: 96px;
+}
+
+.row-fluid { /*sets width of entire page*/
+    padding: 25px 0px;
+    margin: 0px auto;
+    width: 725px !important;
+}
+
+.brand { /*title*/
+    font-size: 63px;
+    font-family: OpenSansExtraBold !important;
+    padding: 0px 0px 0px 10px;
+    margin: 10px 0px 15px 0px !important;   
+}
+
+.subTitle {        
+    font-family: OpenSansLight;
+    font-size: 43px;
+}
+
+#username, #password, #login {
+    font-size: 18px;
+    position: relative;
+}
+
+#username {
+    top: 8px;
+}
+
+#password {
+    top: 38px;
+}
+
+#login { /*button*/
+    width: 103px;
+    height: 45px;
+    top: 80px;
+    left: 618px;
+    background-color: #184f2c;
+    font-family: OpenSansLight;
+    color: #fff;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.span12 {
+    float: right;
+    width: 580px;
+    height: 35px;
+    margin-bottom: 15px;
+    padding-left: 8px;
+    background-color: #FAFFBD;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+
+/*-------Header-------*/
+#header {
+    height: 120px;
+    border-bottom: 1px solid #dddde2;
+}
+
+#SiteTitle {
+    font-size: 14px;
+    position: relative;
+    left: 285px;
+    bottom: 30px;
+    width: 300px;
+}
+
+#LogInfo {
+    font-size: 14px;
+    float: right;
+    position: relative;
+    bottom: 50px;
+    margin-right: 18px;
+}
+
+#Logo {
+    width: 190px;
+    height: 90px;
+    padding: 30px 0px 0px 75px;
+    border-right: 1px solid #dddde2;
+}
+/*------End Header-----*/
+
+/*------Month & Year Titles-----*/
+#fctitle {
+    overflow: auto;
+}
+
+span.month {
+    font-family: OpenSansExtrabold;
+    font-size: 100px;
+    color: #184f2c;
+    padding: 0px 0px 0px 12px;
+}
+
+span.day {
+    font-family: OpenSansExtrabold;
+    font-size: 100px;
+    color: #184f2c;
+    width: 246px;
+    text-align: right;
+    display: block;
+    float: left;
+    margin-right: 16px;
+}
+
+span.year {
+    font-size: 100px;
+    text-align: right;
+    display: block;
+    float: left;
+    color: #bcbcbc;
+}
+
+span.date {
+    font-size: 100px;
+    text-align: right;
+    display: block;
+    float: left;
+    color: #bcbcbc;
+}
+
+.fc-header-title h2 {
+    font-size: 100px;
+    color: #bcbcbc;
+    margin-bottom: 10px;
+}
+/*---End Month & Year Titles---*/
+
+/*---Navigation---*/
+#main-menu {
+    float: right;
+    position: relative;
+    left: 222px;
+    font-size: 32px;
+    color: #e1a358;
+    cursor: pointer;
+    height: 86px;
+    margin: 50px 25px -136px 0px;
+}
+
+    #main-menu i.icon-plus {
+        float: left;
+        height: 25px;
+        font-style: normal;
+        padding: 20px 10px;
+    }
+
+#calendar > div.fc-toolbar.fc-header-toolbar > div.fc-left > div > button.fc-button {
+    margin-left: 10px;
+    border-color: transparent;
+    box-shadow: none;
+    text-shadow: none;
+    width: 62px;
+    height: 35px;
+}
+
+    #calendar > div.fc-toolbar.fc-header-toolbar > div.fc-left > div > button.fc-button > span {
+        display: none;
+    }
+
+#calendar button.fc-state-default {
+    border-color: transparent;
+    box-shadow: none;
+    text-shadow: none;
+    color: #e1a358;
+    background-color: transparent;
+    font-size: xx-large;
+    font-family: OpenSansLight;
+    background: none;
+}
+
+
+
+#calendar > div.fc-toolbar.fc-header-toolbar > div.fc-left > div > button.fc-prev-button {
+    background: url("images/left-finger.png") no-repeat center;
+    align-content: center;
+    padding-top: 60px;
+}
+
+#calendar > div.fc-toolbar.fc-header-toolbar > div.fc-left > div > button.fc-next-button {
+    background: url("images/right-finger.png") no-repeat center;
+    align-content: center;
+    padding-top: 60px;
+}
+
+/*--End Navigation--*/
+
+/*--Calendar & Items--*/
+#calendar {
+    padding: 0px 15px 0px 0px;
+}
+
+#calendarLoad {
+    position: absolute;
+    top: 50%;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    color: #000000 !important;
+}
+
+/*custom fullcalendar*/
+
+
+.fc-month-view {
+    background-image: url("images/backimg2.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.fc-scroller td.fc-day {
+    background: none;
+}
+
+.fc-head-container th.fc-day-header {
+    background: #184f2c;
+    color: #FFF;
+}
+
+.fc-unthemed td.fc-today {
+    background: #bcbcbc;
+    border-color: white;
+}
+
+.fc-ltr .fc-basic-view .fc-day-top .fc-day-number {
+    float: left;
+}
+
+.fc-basic-view .fc-week-number, .fc-basic-view .fc-day-number {
+    padding: 5px 8px;
+}
+
+/*custom fullcalendar*/
+
+#calendar div.fc-grid table thead th { /*Weekdays positioning*/
+    border: none;
+    text-align: left;
+    color: #41414c;
+    padding: 13px 0px 8px;
+}
+
+.fc-day-number {
+    color: #fff;
+    text-shadow: 0px 0px 10px rgba(55,55,55, 0.7);
+    font-family: Arial;
+    font-weight: 600;
+}
+
+.fc-grid .fc-day-number {
+    float: none !important;
+}
+
+.fc-event {
+    background-color: #184f2c !important;
+}
+/*--End Calendar & Items--*/
+
+/*--Today Scheduler & Items--*/
+#calendar div.fc-agenda {
+    margin-left: 5px;
+    margin-top: 20px;
+}
+
+    #calendar div.fc-agenda thead {
+        visibility: hidden;
+    }
+
+#class {
+    border: 1px solid #456879;
+    border-radius: 6px;
+    height: 22px;
+    width: 200px;
+    margin-top: 5px;
+}
+
+.fc-agenda-allday {
+    background-color: #333;
+    height: 65px;
+    font-variant: small-caps;
+    color: #fff;
+}
+
+.fc-event-vert { /*Resizes event box on Today View to extend full width*/
+    left: 92px !important;
+}
+
+div.fc-view-agendaDay .fc-event-time, div.fc-view-agendaDay .fc-event-title { /*Pushes event box text ONLY on Today Schedular -- genius :) */
+    padding: 0px 0px 0px 10px;
+}
+/*--End Today Scheduler & Items--*/
+
+/*--Jquery Ui Widget Fixes--*/
+.ui-widget {
+    font-family: OpenSansLight !important;
+}
+
+.ui-widget-header {
+    border: none !important;
+}
+
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+    font-family: OpenSansLight !important;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.ui-corner-all {
+    border-bottom-right-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+    border-top-right-radius: 0px !important;
+    border-top-left-radius: 0px !important;
+}
+
+.ui-dialog {
+    padding: 0px !important;
+}
+
+.ui-dialog-title {
+    text-align: left !important;
+}
+
+.ui-dialog-buttonset {
+    float: none !important;
+    text-align: right !important;
+}
+
+.ui-dialog-titlebar {
+    border: none !important;
+}
+
+.alert-info strong {
+    color: #e1a358;
+    margin-right: 10px;
+}
+
+.ui-datepicker {
+    padding: 0px !important;
+}
+
+.ui-timepicker-div {
+    padding: 0px 8px;
+}
+/*--End Jquery Ui Widget Fixes--*/
+
+.waiting {
+    cursor: wait !important;
+}
+
+.loading {
+    cursor: progress !important;
+}
+
+.modal-body {
+    height: 300px;
+    max-height: 500px;
+}
+
+#error {
+    color: red;
+    padding-top: 20px;
+}
+
+.date_span {
+    width: 255px;
+}
+
+i.event {
+}
+
+.fc-widget-content {
+    cursor: pointer !important;
+}
+
+i.icon-info-sign {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    z-index: 999999999999;
+}
+
+
+.delete {
+    background: linear-gradient(180deg, #C40000, #8C0000) !important;
+    color: #FFF !important;
+    float: left !important;
+}
+
+
+.create,
+.update {
+    background: linear-gradient(180deg, #058C00, #035C00) !important;
+    color: #FFF !important;
+}
+
+form,
+.form-horizontal .control-group {
+    /*margin:0px !important;*/
+}
+
+.ui-dialog .ui-dialog-buttonpane button {
+    font-size: 13px;
+}
+
+progress {
+    text-align: center !important;
+}
+
+.fc-header-left span.fc-header-space {
+    display: none;
+}
+
+.fc-state-disabled,
+.fc-button-month.fc-state-active {
+    cursor: default;
+}
+
+.fc-button-today.fc-state-disabled {
+    color: #e1a358 !important;
+}
+
+.hide-div {
+    display: none;
+}

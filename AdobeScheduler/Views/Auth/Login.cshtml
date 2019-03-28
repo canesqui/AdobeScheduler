@@ -4,22 +4,92 @@
     Layout = "~/Views/Shared/_Auth.cshtml";
 
 }
-<span id="logo-login"><img src="~/Content/images/logo-login.jpg" /></span>
-<p class="brand"> Online Campus<br /><span class="subTitle">Adobe Connect Calendar</span></p>
-<div class="block">
-    <div id="error">@Html.ValidationMessage("LogOnError")</div>
-    @using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { id = "loginform", @class = "form-vertical" }))
-    {
-        <span id="username">Username</span>
-        @Html.TextBoxFor(m => m.Username, new { placeholder = "Connect UserName", @class = "span12", id = "uname" })
-        <span id="password">Password</span>
-        @Html.PasswordFor(m => m.Password, new { placeholder = "Connect Password", @class = "span12", id = "pass" })
 
-    }
-    <div class="form-actions">
-        <button id="login" type="submit" class="btn btn-success pull-right">Login</button>
-        <div class="clearfix"></div>
+
+
+<div class="container-top">
+
+    <div class="left">
+        <img id="logo" src=@Href("~"+System.Web.Configuration.WebConfigurationManager.AppSettings["BigLogo"]) />
+    </div>
+    <div class="right">
+        <div class="brand">
+            @System.Configuration.ConfigurationManager.AppSettings["ApplicationName"]
+        </div>
+        <div class="subTitle">
+            Adobe Connect Calendar
+        </div>
     </div>
 
 </div>
+
+<div class="container-bottom">
+    <div class="container-bottom-content">
+        <div id="error">@Html.ValidationMessage("LogOnError")</div>
+        <div>
+            @using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { id = "loginform" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <span class="">
+                        @Html.LabelFor(m => m.Username, htmlAttributes: new { @class = "label", id = "username" })
+                    </span>
+                    @Html.TextBoxFor(m => m.Username, new { placeholder = "Connect UserName", @class = "field" })
+                </div>
+                <div class="form-group">
+                    <span class="">
+                        @Html.LabelFor(m => m.Password, htmlAttributes: new { @class = "label", id = "password" })
+                    </span>
+                    @Html.PasswordFor(m => m.Password, new { placeholder = "Connect Password", @class = "field" })
+                </div>
+                <div class="rightalign">
+                    <button id="login" type="submit" class="">Login</button>
+                </div>
+            }
+        </div>
+
+
+    </div>
+</div>
+
+
+
+<!--
+<div class="container">
+    <div class="left">
+        <img src=@System.Web.Configuration.WebConfigurationManager.AppSettings["Logo"] />
+    </div>
+    <div class="right">
+        <div class="brand">@System.Configuration.ConfigurationManager.AppSettings["ApplicationName"]</div>
+        <br />
+        <div class="subTitle">Adobe Connect Calendar</div>
+    </div>
+
+</div>
+
+<div class="form-horizontal">
+    <div id="error">@Html.ValidationMessage("LogOnError")</div>
+    <div>
+        @using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { id = "loginform" }))
+        {
+            <div class="form-group">
+                <span class="">
+                    @Html.LabelFor(m => m.Username, htmlAttributes: new { @class = "ronaldo", id = "username" })
+                </span>
+                @Html.TextBoxFor(m => m.Username, new { placeholder = "Connect UserName", @class = "canesqui" })
+            </div>
+            <div class="form-group">
+                <span class="">
+                    @Html.LabelFor(m => m.Password, htmlAttributes: new { @class = "ronaldo", id = "password" })
+                </span>
+                @Html.PasswordFor(m => m.Password, new { placeholder = "Connect Password", @class = "canesqui" })
+            </div>
+        }
+        <div class="form-actions">
+            <button id="login" type="submit" class="btn btn-success pull-right">Login</button>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
 <div id="request" style="display:none;"></div>
+    -->

@@ -1,16 +1,9 @@
 ﻿@{
-    Layout = null;
+    Layout = "~/Views/Shared/_Auth.cshtml";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Error</title>
-</head>
-<body>
-    <h2>
-        Sorry, an error occurred while processing your request.
-    </h2>
-</body>
-</html>
+
+<title>Error</title>
+
+
+An error ocurred. Click <a href="@Url.Action("Index", "Dashboard")"> here</a> to return to home page.

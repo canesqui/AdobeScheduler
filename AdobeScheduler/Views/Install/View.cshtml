@@ -1,0 +1,133 @@
+﻿@model AdobeScheduler.Models.Setup
+
+@{
+    ViewBag.Title = "Adobe Scheduler Setup";
+    Layout = "~/Views/Shared/_Install.cshtml";
+}
+
+<h1>Adobe Scheduler Setup</h1>
+
+@using (Html.BeginForm("Setup", "Install", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <hr />
+    @Html.ValidationSummary(false)
+    <div class="form-group">
+        <span>
+            @Html.LabelFor(model => model.ApplicationName, htmlAttributes: new { @class = "label" })
+        </span>
+        <div>
+            @Html.EditorFor(model => model.ApplicationName, new { htmlAttributes = new { @class = "setupinput-small" } })
+            <span id="error">
+                @Html.ValidationMessageFor(model => model.ApplicationName, "", new { @class = "text-danger" })
+            </span>
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="form-group">
+        <span>
+            @Html.LabelFor(model => model.ConnectionString, htmlAttributes: new { @class = "label" })
+        </span>
+        <div>
+            @Html.EditorFor(model => model.ConnectionString, new { htmlAttributes = new { @class = "setupinput-medium" } })
+            <span id="error">
+                @Html.ValidationMessageFor(model => model.ConnectionString, "", new { @class = "text-danger" })
+            </span>
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="form-group">
+        <span>
+            @Html.LabelFor(model => model.AdobeConnectUrl, htmlAttributes: new { @class = "label" })
+        </span>
+        <div>
+            @Html.EditorFor(model => model.AdobeConnectUrl, new { htmlAttributes = new { @class = "setupinput-small" } })
+            <span id="error">
+                @Html.ValidationMessageFor(model => model.AdobeConnectUrl, "", new { @class = "text-danger" })
+            </span>
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="form-group">
+        <span>
+            @Html.LabelFor(model => model.AvailableLicenses, htmlAttributes: new { @class = "label" })
+        </span>
+        <div>
+            @Html.EditorFor(model => model.AvailableLicenses, new { htmlAttributes = new { @class = "setupinput-small" } })
+            <span id="error">
+                @Html.ValidationMessageFor(model => model.AvailableLicenses, "", new { @class = "text-danger" })
+            </span>
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="form-group">
+        <span>
+            @Html.LabelFor(model => model.BaseLineTimeZone, htmlAttributes: new { @class = "label" })
+            The baseline time zone will define the behavior
+        </span>
+        <div>
+            @{
+                var timeZoneList = new List<SelectListItem>();
+                foreach (TimeZoneInfo z in TimeZoneInfo.GetSystemTimeZones())
+                {
+                    timeZoneList.Add(new SelectListItem() { Text = z.DisplayName + " - " + z.StandardName, Value = z.Id, Selected = false });
+                }
+            }
+
+            @Html.DropDownListFor(model => model.BaseLineTimeZone, timeZoneList, new { @class = "setupinput-medium" })
+            <span id="error">
+                @Html.ValidationMessageFor(model => model.BaseLineTimeZone, "", new { @class = "text-danger" })
+            </span>
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="form-group">
+        <span>
+            @Html.LabelFor(model => model.Color, htmlAttributes: new { @class = "label" })
+        </span>
+        <div>
+            <input class="setupinput-small" type="color" name="Color" />
+            <span id="error">
+                @Html.ValidationMessageFor(model => model.Color, "", new { @class = "text-danger" })
+            </span>
+        </div>
+    </div>
+    <br />
+    <br />
+    <br />
+    <div class="form-group">
+        <label for="Logo" class="label">Big logo image (Provide an image with at least 123 pixels height)</label>
+        <div class="col-md-10">
+            <input type="file" accept="image/*" name="Big-logo" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="Logo" class="label">Small logo (Provide an image with at least 123 pixels height)</label>
+        <div class="col-md-10">
+            <input type="file" accept="image/*" name="Small-logo" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="Background" class="label">Calendar background image</label>
+        <div class="col-md-10">
+            <input type="file" accept="image/*" name="Background" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input id="installbutton" type="submit" value="Install" class="btn btn-success pull-right" />
+        </div>
+    </div>
+</div>
+}
+

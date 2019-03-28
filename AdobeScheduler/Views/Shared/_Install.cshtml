@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>    
+    @Scripts.Render("~/auth")
+
+    @Styles.Render("~/content/css")        
+    
+    <link rel="stylesheet" type="text/css" href="~/Content/fonts/opensans.css" />
+
+</head>
+    <!--[if lt IE 7 ]> <body class="ie ie6"> <![endif]-->
+    <!--[if IE 7 ]> <body class="ie ie7 "> <![endif]-->
+    <!--[if IE 8 ]> <body class="ie ie8 "> <![endif]-->
+    <!--[if IE 9 ]> <body class="ie ie9 "> <![endif]-->
+    <!--[if (gt IE 9)|!(IE)]><!-->
+    <body class="">
+        <!--<![endif]-->
+        <div class="row-fluid-setup">
+            <div class="dialog">
+                @RenderBody()
+            </div>
+        </div>        
+    </body>
+</html>

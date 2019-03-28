@@ -1,4 +1,10 @@
-﻿html,
+﻿/*
+:root {
+    --accent-color: #184f2c;
+}
+    */
+
+html,
 body {
     background: #FFF;
     font-family: OpenSansLight;
@@ -42,6 +48,31 @@ hr {
 
 
 /*-------Login--------*/
+.container-top {
+    display: flex;
+    margin-top: 150px;
+    min-width: 1018px;
+}
+
+.left {
+    min-width: 50%;
+    text-align: right;
+    min-height: 135px;
+}
+
+.right {
+    flex-grow: 1;
+    text-align: left;
+    min-width: 494px;
+    min-height: 170px;
+}
+
+.container-bottom {
+    text-align: center;
+    min-width: 1018px;
+}
+
+
 #logo-login {
     position: relative;
     top: 130px;
@@ -55,20 +86,23 @@ hr {
     width: 725px !important;
 }
 
+.row-fluid-setup { /*sets width of entire page*/
+    padding: 25px 0px;
+    margin: 0px auto;
+    width: 755px !important;
+}
+
 .brand { /*title*/
     font-size: 63px;
     font-family: OpenSansExtraBold !important;
-    padding: 0px 0px 0px 231px;
-    margin: 10px 0px 15px 0px !important;
-    border-bottom: 1px solid #dddde2;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 10px !important;
 }
 
 .subTitle {
-    position: relative;
-    top: -38px;
-    margin-left: 5px;
     font-family: OpenSansLight;
-    font-size: 43%;
+    font-size: 43px;
+    margin: 0px 0px 0px 10px !important;
 }
 
 #username, #password, #login {
@@ -76,22 +110,91 @@ hr {
     position: relative;
 }
 
+/*
 #username {
-    top: 8px;
+     top: 8px;
 }
+*/
 
 #password {
-    top: 38px;
+    margin-right: 5px;
 }
+
+
+.rightalign {
+    text-align: center;
+    margin-left: 580px;
+}
+
+.pull-right {
+    float: right;
+}
+
+.setupinput-small {
+    float: left;
+    width: 280px;
+    height: 35px;
+    padding-left: 8px;   
+    background-color: #faffbd;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.label {
+    min-width: 500px;
+    font-size: 18px;
+    margin-top: 30px;
+}
+
+.field {
+    width: 580px;
+    height: 35px;
+    padding-left: 8px;
+    margin-bottom: 10px;
+    background-color: #faffbd;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.setupinput-medium {
+    float: left;
+    width: 780px;
+    height: 35px;
+    padding-left: 8px;    
+    background-color: #faffbd;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+#installbutton { /*button*/
+    width: 103px;
+    height: 45px;
+    font-size: 18px;
+    position: relative;
+    background-color: #184f2c;
+    font-family: OpenSansLight;
+    color: #fff;
+    margin-top: 35px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
 
 #login { /*button*/
     width: 103px;
     height: 45px;
-    top: 80px;
-    left: 618px;
-    background-color: #184f2c;
+    background-color: var(--accent-color);    
     font-family: OpenSansLight;
     color: #fff;
+    margin-top: 35px;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
@@ -136,10 +239,12 @@ hr {
 
 #Logo {
     width: 190px;
-    height: 90px;
+    height: 90px;   
     padding: 30px 0px 0px 75px;
     border-right: 1px solid #dddde2;
 }
+
+
 /*------End Header-----*/
 
 /*------Month & Year Titles-----*/
@@ -150,14 +255,14 @@ hr {
 span.month {
     font-family: OpenSansExtrabold;
     font-size: 100px;
-    color: #184f2c;
+    color: var(--accent-color);
     padding: 0px 0px 0px 12px;
 }
 
 span.day {
     font-family: OpenSansExtrabold;
     font-size: 100px;
-    color: #184f2c;
+    color: var(--accent-color);
     width: 246px;
     text-align: right;
     display: block;
@@ -266,7 +371,7 @@ span.date {
 
 
 .fc-month-view {
-    background-image: url("images/backimg2.jpg");
+    background-image: ulr();
     background-size: cover;
     background-repeat: no-repeat;
 }
@@ -276,7 +381,7 @@ span.date {
 }
 
 .fc-head-container th.fc-day-header {
-    background: #184f2c;
+    background: var(--accent-color);
     color: #FFF;
 }
 
@@ -457,7 +562,12 @@ i.icon-info-sign {
 
 form,
 .form-horizontal .control-group {
-    /*margin:0px !important;*/
+    /*margin:0px !important;*/   
+    
+}
+
+.margin-top {
+    margin-top: 50px;
 }
 
 .ui-dialog .ui-dialog-buttonpane button {
@@ -484,3 +594,8 @@ progress {
 .hide-div {
     display: none;
 }
+
+:root { --accent-color: #ff8040;}
+:root { --accent-color: #ff8040;}
+:root { --accent-color: #ff8000;}
+:root { --accent-color: #ff8000;}

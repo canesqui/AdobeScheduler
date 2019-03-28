@@ -311,7 +311,7 @@ $(function () {
                         .append(roomHtml);
                 }
 
-                if (event.editable && !event.archived) {                    
+                if (event.editable && !event.archived) {
                     var html = '<a id="editEvent" href="#' + event.id + '"><i class="ui-icon ui-icon-pencil" style="float:right;"></i></a>';
                     element.find(".fc-title").append(html);
                 }
@@ -321,7 +321,12 @@ $(function () {
                 title = title.split(" ");
                 let htmlText = '';
                 if (view.name === 'month') {
-                    htmlText = "<span class='year'>{0}</span><span class='month'>{1}</span>".formatUnicorn(title[0], title[1]);
+                    htmlText = "<span class='year'>{0}</span><span class='month'>{1}</span>".formatUnicorn(title[0], title[1]);                    
+                    adobeConnect.server.getBackgroundImage().then(function (e) {          
+                        console.log(e);
+
+                        $(".fc-month-view").css("background-image", "url('" + e.substring(1, e.length) + "')");
+                    });
                 }
                 else {
                     htmlText = '<span class="day">{0}</span><span class="date">{1}</span>'.formatUnicorn(title[0].toUpperCase(), title[1]);
@@ -331,14 +336,14 @@ $(function () {
             events: function (start, end, timezone, cb) {
                 cb(events);
             },
-            dayClick: function (date, jsEvent, view) {                
+            dayClick: function (date, jsEvent, view) {
                 if (view.name === 'month') {
                     $('#calendar').fullCalendar('changeView', 'agendaDay');
                     $('#calendar').fullCalendar('gotoDate', date);
                 }
 
                 if (view.name === 'agendaDay') {
-                    $('#datetime').val(moment(date).format("MM/DD/YYYY hh:mm:ss A "));                    
+                    $('#datetime').val(moment(date).format("MM/DD/YYYY hh:mm:ss A "));
                     if (moment(moment().utc().local().subtract(30, 'minutes')).isAfter(moment(date, "MM/DD/YYYY hh:mm:ss A "))) {
                         alert("Events cannot be created in the past.");
                         return;
@@ -576,13 +581,13 @@ $(function () {
     $.connection.hub.start().done(function () {
         adobeConnect.server.getAllAppointments(moment().format("MM/DD/YYYY hh:mm A")).done(Calendar);
         adobeConnect.server.getRooms().done(function (result) {
-            if (result.length !== null) {       
+            if (result.length !== null) {
                 console.log(result);
                 $('#class').find('option').remove().append('<option selected="selected" disabled="disabled" data-path="" data-url="">Select Your Room:</option>');
                 for (var i = 0; i < result.length; i++) {
                     $('#class').append("<option data-path=\"" + result[i].url + "\" data-url=\"" + result[i].adobeUrl + "\">" + result[i].meetingName + "</option>");
                 }
-                $(".chosen-select").trigger("chosen:updated");               
+                $(".chosen-select").trigger("chosen:updated");
             }
         });
     });

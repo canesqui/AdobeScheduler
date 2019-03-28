@@ -9,6 +9,7 @@ using AdobeScheduler.Util;
 using AdobeConnectSDK.Model;
 using SAUAdobeConnectSDK;
 using System.Configuration;
+using System.Runtime.Remoting.Contexts;
 
 namespace AdobeScheduler.Controllers
 {
@@ -18,6 +19,7 @@ namespace AdobeScheduler.Controllers
         [HandleError]
         [AllowAnonymous]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Login(LoginUser user)
         {
             if (ModelState.IsValid)
@@ -30,8 +32,7 @@ namespace AdobeScheduler.Controllers
                     CustomCommunicationProvider customCommunicationProvider = new CustomCommunicationProvider(con.GetUserInfo().SessionInfo, ConfigurationManager.AppSettings["NetDomain"]);
                     AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI(customCommunicationProvider);
                     var userMeetings = Utilities.Adapter<Models.MeetingItem[], EnumerableResultStatus<AdobeConnectSDK.Model.MeetingItem>>(AdobeConnectSDK.Extensions.MeetingManagement.GetMyMeetings(adobeObj));
-
-
+                    
                     int id = int.Parse(con.GetUserInfo().Result.UserId);                    
                     Identity Id = new Identity(id, user.Username, "T", con.GetUserInfo().SessionInfo);
                     DateTime expire = DateTime.Now.AddMinutes(FormsAuthentication.Timeout.TotalMinutes);
@@ -40,9 +41,9 @@ namespace AdobeScheduler.Controllers
                     HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, hashTicket);
                     HttpContext.Response.Cookies.Add(cookie);
 
-                    
+
                     UserSession userSession = new UserSession(userMeetings, sessionInfo);
-                    Session["UserSession"] = userSession;
+                    Session["UserSession"] = userSession;                    
                 }
                 else
                 {
@@ -58,10 +59,17 @@ namespace AdobeScheduler.Controllers
         [HttpGet]
         public ActionResult Login()
         {
-            return View();
-        }
+            if (bool.Parse(ConfigurationManager.AppSettings["RunSetup"]) == true)
+            {                
+                return RedirectToAction("Start", "Install");                
+            }
+            else
+            {
+                return View();
+            }
 
-        [Authorize]
+        }
+        
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
@@ -76,9 +84,15 @@ namespace AdobeScheduler.Controllers
 
         public ActionResult UnAUthorized()
         {
-            return View("Login");
+            if (bool.Parse(ConfigurationManager.AppSettings["RunSetup"]) == true)
+            {
+                return View();
+            }
+            else
+            {
+                return View("Login");
+            }
         }
-
 
     }
 }
