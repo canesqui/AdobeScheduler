@@ -453,7 +453,9 @@ namespace AdobeScheduler.Hubs
                         series.Add(new Series() { StartingDate = adjustedStartingTime, EndingDate = adjustedEndingTime });
                         //}
                     }
-                } while (currentEndingTime.Add(timeSpan) <= endRepetition);
+                    Debug.Write(currentEndingTime.Add(timeSpan).Date.ToString());
+                    Debug.Write(endRepetition.Date.ToString());
+                } while (currentEndingTime.Add(timeSpan).Date <= endRepetition.Date);
             }
             else
             {

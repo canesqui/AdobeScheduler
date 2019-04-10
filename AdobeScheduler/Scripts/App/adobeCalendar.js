@@ -321,12 +321,12 @@ $(function () {
                 title = title.split(" ");
                 let htmlText = '';
                 if (view.name === 'month') {
-                    htmlText = "<span class='year'>{0}</span><span class='month'>{1}</span>".formatUnicorn(title[0], title[1]);                    
-                    adobeConnect.server.getBackgroundImage().then(function (e) {          
-                        console.log(e);
-
+                    htmlText = "<span class='year'>{0}</span><span class='month'>{1}</span>".formatUnicorn(title[0], title[1]);
+                    console.log('Before call to the server');
+                    adobeConnect.server.getBackgroundImage().then(function (e) {                                  
                         $(".fc-month-view").css("background-image", "url('" + e.substring(1, e.length) + "')");
                     });
+                    console.log('After call to the server');
                 }
                 else {
                     htmlText = '<span class="day">{0}</span><span class="date">{1}</span>'.formatUnicorn(title[0].toUpperCase(), title[1]);
@@ -581,8 +581,7 @@ $(function () {
     $.connection.hub.start().done(function () {
         adobeConnect.server.getAllAppointments(moment().format("MM/DD/YYYY hh:mm A")).done(Calendar);
         adobeConnect.server.getRooms().done(function (result) {
-            if (result.length !== null) {
-                console.log(result);
+            if (result.length !== null) {                
                 $('#class').find('option').remove().append('<option selected="selected" disabled="disabled" data-path="" data-url="">Select Your Room:</option>');
                 for (var i = 0; i < result.length; i++) {
                     $('#class').append("<option data-path=\"" + result[i].url + "\" data-url=\"" + result[i].adobeUrl + "\">" + result[i].meetingName + "</option>");
@@ -683,7 +682,7 @@ $(function () {
         inputDataChanged();
     });
 
-    $('#repetition_date').datetimepicker({
+    $('#repetition_date').datepicker({
         minDate: 0,
         timeFormat: "hh:mm TT",
         minuteGrid: 10

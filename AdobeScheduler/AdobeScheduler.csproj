@@ -223,8 +223,6 @@
     <Content Include="Content\fullcalendar.print.css" />
     <Content Include="Content\images\backimg2.jpg" />
     <Content Include="Content\images\left-finger.png" />
-    <Content Include="Content\images\logo.jpg" />
-    <Content Include="Content\images\logo-login.jpg" />
     <Content Include="Content\images\right-finger.png" />
     <Content Include="Content\images\ui-icons_444444_256x240.png" />
     <Content Include="Content\images\ui-icons_555555_256x240.png" />

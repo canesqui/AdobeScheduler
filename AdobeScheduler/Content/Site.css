@@ -54,10 +54,15 @@ hr {
     min-width: 1018px;
 }
 
+.container-bottom-content {
+    margin-top: 60px;
+}
+
+
 .left {
-    min-width: 50%;
+    min-width: 46%;
     text-align: right;
-    min-height: 135px;
+    min-height: 135px;    
 }
 
 .right {
@@ -65,6 +70,7 @@ hr {
     text-align: left;
     min-width: 494px;
     min-height: 170px;
+    margin-left: 30px;
 }
 
 .container-bottom {
@@ -595,7 +601,6 @@ progress {
     display: none;
 }
 
-:root { --accent-color: #ff8040;}
-:root { --accent-color: #ff8040;}
-:root { --accent-color: #ff8000;}
-:root { --accent-color: #ff8000;}
+:root {
+    --accent-color: #184f2c;
+}
